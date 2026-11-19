@@ -220,11 +220,11 @@
             </div>
         </div>
 
-        <!-- TABLA 1: DESGLOSE -->
-        <div class="divide-y divide-[#eeeeee] border-t border-b-[1.5px] border-t-[#eeeeee] border-b-[#111111] mt-3 text-[13px] sm:text-[15px]">
+        <!-- TABLA 1: DESGLOSE (Cajas anchas y letra ligeramente más compacta en móvil para que no se corte ningún número) -->
+        <div class="divide-y divide-[#eeeeee] border-t border-b-[1.5px] border-t-[#eeeeee] border-b-[#111111] mt-3 text-[12.5px] sm:text-[15px]">
             <div class="py-2.5 flex items-center justify-between gap-2">
                 <span class="text-[#111111] font-normal">Precio del piso</span>
-                <div class="flex items-center font-bold text-[#111111] shrink-0">
+                <div class="flex items-center font-bold text-[#111111] shrink-0 tabular-nums">
                     <input type="text" id="inpPrice" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleNumericInput('price', this)"
                         class="editable-field text-right font-bold w-24 sm:w-28 text-[#111111]">
@@ -232,35 +232,35 @@
                 </div>
             </div>
 
-            <div class="py-2.5 flex items-center justify-between gap-1.5">
-                <span class="text-[#111111] font-normal leading-tight">Comisión agencia</span>
-                <div class="flex items-center font-bold text-[#111111] shrink-0">
+            <div class="py-2.5 flex items-center justify-between gap-1">
+                <span class="text-[#111111] font-normal leading-tight">Comisión<br class="sm:hidden"> agencia</span>
+                <div class="flex items-center font-bold text-[#111111] shrink-0 tabular-nums text-[12px] sm:text-[15px]">
                     <input type="text" id="inpAgencyLabel" oninput="updateField('agencyLabel', this.value)"
                         class="editable-field text-right font-bold w-16 sm:w-24 text-[#111111]">
                     <span class="ml-0.5">(</span>
                     <input type="text" id="inpAgencyFee" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleNumericInput('agencyFee', this)"
-                        class="editable-field text-right font-bold w-12 sm:w-16 text-[#111111]">
+                        class="editable-field text-right font-bold w-16 sm:w-20 text-[#111111]">
                     <span>€)</span>
                 </div>
             </div>
 
             <div class="py-2.5 flex items-center justify-between gap-1">
                 <span class="text-[#111111] font-normal leading-tight">Intermediación<br class="sm:hidden"> hipoteca</span>
-                <div class="flex items-center font-bold text-[#111111] shrink-0">
+                <div class="flex items-center font-bold text-[#111111] shrink-0 tabular-nums text-[12px] sm:text-[15px]">
                     <input type="text" id="inpBrokerLabel" oninput="updateField('brokerLabel', this.value)"
-                        class="editable-field text-right font-bold w-24 sm:w-32 text-[#111111] text-[12px] sm:text-[15px]">
+                        class="editable-field text-right font-bold w-24 sm:w-32 text-[#111111]">
                     <span class="ml-0.5">(</span>
                     <input type="text" id="inpBrokerFee" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleNumericInput('brokerFee', this)"
-                        class="editable-field text-right font-bold w-12 sm:w-16 text-[#111111]">
+                        class="editable-field text-right font-bold w-16 sm:w-20 text-[#111111]">
                     <span>€)</span>
                 </div>
             </div>
 
             <div class="py-2.5 flex items-center justify-between gap-2">
                 <span class="text-[#111111] font-normal leading-tight">Reformas y pintura (estim.)</span>
-                <div class="flex items-center font-bold text-[#111111] shrink-0">
+                <div class="flex items-center font-bold text-[#111111] shrink-0 tabular-nums">
                     <input type="text" id="inpRenovation" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleNumericInput('renovation', this)"
                         class="editable-field text-right font-bold w-20 sm:w-24 text-[#111111]">
@@ -268,51 +268,51 @@
                 </div>
             </div>
 
-            <div class="py-3 flex items-center justify-between gap-2 font-bold text-[#111111]">
+            <div class="py-3 flex items-center justify-between gap-2 font-bold text-[#111111] tabular-nums">
                 <span>Precio + reformas</span>
                 <span id="valPricePlusRenovation" class="shrink-0">0 €</span>
             </div>
         </div>
 
-        <!-- TABLA 2: COMPARATIVA ITP 5% vs ITP 10% (Columnas blindadas en móvil) -->
-        <div class="mt-4 text-[11.5px] sm:text-[15px]">
-            <div class="grid grid-cols-[1fr_84px_84px] sm:grid-cols-[1fr_110px_110px] items-center pb-2 font-bold gap-1">
+        <!-- TABLA 2: COMPARATIVA ITP 5% vs ITP 10% -->
+        <div class="mt-4 text-[11px] sm:text-[15px]">
+            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center pb-2 font-bold gap-1">
                 <div></div>
                 <div class="text-right text-[#2e7d32] whitespace-nowrap">ITP 5% (*)</div>
                 <div class="text-right text-[#111111] whitespace-nowrap">ITP 10%</div>
             </div>
 
-            <div class="grid grid-cols-[1fr_84px_84px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
                 <div class="text-[#111111]">ITP (impuesto)</div>
                 <div id="valItp5" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">0 €</div>
                 <div id="valItp10" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">0 €</div>
             </div>
 
-            <div class="grid grid-cols-[1fr_84px_84px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
                 <div class="text-[#111111] leading-tight">Otros gastos (estim.)</div>
                 <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap tabular-nums">
                     <span>~</span>
                     <input type="text" id="inpOtherExpenses" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleNumericInput('otherExpenses', this)"
-                        class="editable-field text-right font-bold w-11 sm:w-16 text-[#111111]">
+                        class="editable-field text-right font-bold w-12 sm:w-16 text-[#111111]">
                     <span>€</span>
                 </div>
                 <div id="valOtherExpensesRight" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">~3.200 €</div>
             </div>
 
-            <div class="grid grid-cols-[1fr_84px_84px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
                 <div class="text-[#111111] leading-tight">Total operación</div>
                 <div id="valTotal5" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">~0 €</div>
                 <div id="valTotal10" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">~0 €</div>
             </div>
 
-            <div class="grid grid-cols-[1fr_84px_84px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
                 <div class="flex items-center flex-wrap text-[#111111] leading-tight">
                     <span>Falta sobre</span>
                     <div class="flex items-center">
                         <input type="text" id="inpAvailableCash" inputmode="numeric"
                             onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleAvailableCashInput(this)"
-                            class="editable-field text-right font-normal w-14 sm:w-20 text-[#111111]">
+                            class="editable-field text-right font-normal w-16 sm:w-20 text-[#111111]">
                         <span>€</span>
                     </div>
                 </div>
@@ -320,8 +320,8 @@
                 <div id="valMissing10" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">~0 €</div>
             </div>
 
-            <div class="grid grid-cols-[1fr_84px_84px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
-                <div class="flex items-center flex-wrap text-[#111111] text-[11px] sm:text-[14px] leading-tight">
+            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+                <div class="flex items-center flex-wrap text-[#111111] text-[10.5px] sm:text-[14px] leading-tight">
                     <span>Cuota</span>
                     <input type="text" id="inpYears1" inputmode="numeric"
                         oninput="handleYearsInput(1, this)"
@@ -329,24 +329,24 @@
                     <span id="lblMonths1" class="hidden text-[10px] sm:text-[12px] mr-0.5">y<span id="valMonths1">0</span>m</span>
                     <span>años (3%)</span>
                 </div>
-                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[11px] sm:text-[14px] tabular-nums">
+                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums">
                     <span>~</span>
                     <input type="text" id="inpQuota1_5" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(1, 5, this)"
-                        class="editable-field text-right font-bold w-8 sm:w-12 text-[#111111]">
+                        class="editable-field text-right font-bold w-9 sm:w-12 text-[#111111]">
                     <span>€/m</span>
                 </div>
-                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[11px] sm:text-[14px] tabular-nums">
+                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums">
                     <span>~</span>
                     <input type="text" id="inpQuota1_10" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(1, 10, this)"
-                        class="editable-field text-right font-bold w-8 sm:w-12 text-[#111111]">
+                        class="editable-field text-right font-bold w-9 sm:w-12 text-[#111111]">
                     <span>€/m</span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-[1fr_84px_84px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
-                <div class="flex items-center flex-wrap text-[#111111] text-[11px] sm:text-[14px] leading-tight">
+            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+                <div class="flex items-center flex-wrap text-[#111111] text-[10.5px] sm:text-[14px] leading-tight">
                     <span>Cuota</span>
                     <input type="text" id="inpYears2" inputmode="numeric"
                         oninput="handleYearsInput(2, this)"
@@ -354,30 +354,29 @@
                     <span id="lblMonths2" class="hidden text-[10px] sm:text-[12px] mr-0.5">y<span id="valMonths2">0</span>m</span>
                     <span>años (3%)</span>
                 </div>
-                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[11px] sm:text-[14px] tabular-nums">
+                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums">
                     <span>~</span>
                     <input type="text" id="inpQuota2_5" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(2, 5, this)"
-                        class="editable-field text-right font-bold w-8 sm:w-12 text-[#111111]">
+                        class="editable-field text-right font-bold w-9 sm:w-12 text-[#111111]">
                     <span>€/m</span>
                 </div>
-                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[11px] sm:text-[14px] tabular-nums">
+                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums">
                     <span>~</span>
                     <input type="text" id="inpQuota2_10" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(2, 10, this)"
-                        class="editable-field text-right font-bold w-8 sm:w-12 text-[#111111]">
+                        class="editable-field text-right font-bold w-9 sm:w-12 text-[#111111]">
                     <span>€/m</span>
                 </div>
             </div>
         </div>
 
-        <!-- Pie limpio sin firma -->
+        <!-- Pie limpio -->
         <div class="border-t border-[#eeeeee] mt-5 pt-3 flex items-center justify-between text-[12px] sm:text-[13px]">
             <span id="txtUpdatedDate" class="text-[#777777]">Actualizado el 20 nov 2026</span>
         </div>
     </main>
 
-    <!-- Indicador de puntos -->
     <div id="dotsIndicator" class="flex items-center justify-center gap-1.5 mt-3"></div>
 
     <!-- MODAL ÍNDICE -->
@@ -426,7 +425,7 @@
                     Enviar por WhatsApp / Correo
                 </button>
                 <button onclick="downloadCapturedImage()" class="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-semibold transition">
-                    Guardar imagen en el móvil
+                    Guardar en Descargas / Documentos
                 </button>
             </div>
         </div>
@@ -1033,7 +1032,7 @@
             showToast('Ficha eliminada');
         }
 
-        // CAPTURA Y COMPARTIR NATIVO ANDROID (CAPACITOR) + WEB
+        // CAPTURA Y COMPARTIR SEGURO (SIN CRASHES EN ANDROID)
         let lastCapturedBlob = null;
         let lastCapturedDataUrl = null;
 
@@ -1097,7 +1096,7 @@
 
             try {
                 const canvas = await html2canvas(clone, {
-                    scale: 2.5,
+                    scale: 2,
                     backgroundColor: '#ffffff',
                     useCORS: true,
                     logging: false
@@ -1123,10 +1122,9 @@
         async function shareCapturedImage() {
             if (!lastCapturedDataUrl) return;
             const prop = getCurrentProperty();
-            const fileName = ((prop.title || 'okpiso-ficha').toLowerCase().replace(/[^a-z0-9]+/g, '-')) + '-' + Date.now() + '.png';
+            const fileName = 'okpiso-' + Date.now() + '.png';
             const base64Data = lastCapturedDataUrl.split(',')[1];
 
-            // 1. Si estamos dentro de la App Android (Capacitor)
             if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem && window.Capacitor.Plugins.Share) {
                 try {
                     const savedFile = await window.Capacitor.Plugins.Filesystem.writeFile({
@@ -1136,15 +1134,15 @@
                     });
                     await window.Capacitor.Plugins.Share.share({
                         title: prop.title || 'Ficha OkPiso',
-                        files: [savedFile.uri]
+                        url: savedFile.uri
                     });
                     return;
                 } catch (e) {
-                    console.error('Error Capacitor Share:', e);
+                    showToast('Error al abrir compartir: ' + (e.message || ''));
+                    return;
                 }
             }
 
-            // 2. Respaldo navegador móvil
             if (lastCapturedBlob && navigator.canShare) {
                 const file = new File([lastCapturedBlob], fileName, { type: 'image/png' });
                 if (navigator.canShare({ files: [file] })) {
@@ -1159,37 +1157,24 @@
 
         async function downloadCapturedImage() {
             if (!lastCapturedDataUrl) return;
-            const prop = getCurrentProperty();
-            const fileName = ((prop.title || 'okpiso-ficha').toLowerCase().replace(/[^a-z0-9]+/g, '-')) + '-' + Date.now() + '.png';
+            const fileName = 'okpiso-' + Date.now() + '.png';
             const base64Data = lastCapturedDataUrl.split(',')[1];
 
-            // 1. Si estamos dentro de la App Android (Capacitor)
             if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
                 try {
-                    await window.Capacitor.Plugins.Filesystem.writeFile({
-                        path: 'Pictures/OkPiso/' + fileName,
+                    const savedFile = await window.Capacitor.Plugins.Filesystem.writeFile({
+                        path: fileName,
                         data: base64Data,
-                        directory: 'EXTERNAL_STORAGE',
-                        recursive: true
+                        directory: 'DOCUMENTS'
                     });
-                    showToast('Guardada en Galería (carpeta OkPiso)');
+                    showToast('Guardada en Documentos/' + fileName);
                     return;
                 } catch (e) {
-                    try {
-                        await window.Capacitor.Plugins.Filesystem.writeFile({
-                            path: fileName,
-                            data: base64Data,
-                            directory: 'DOCUMENTS'
-                        });
-                        showToast('Guardada en carpeta Documentos');
-                        return;
-                    } catch (e2) {
-                        console.error('Error guardando archivo:', e2);
-                    }
+                    showToast('No se pudo guardar: ' + (e.message || ''));
+                    return;
                 }
             }
 
-            // 2. Respaldo navegador
             const link = document.createElement('a');
             link.download = fileName;
             link.href = lastCapturedDataUrl;
@@ -1204,7 +1189,7 @@
             clearTimeout(window._toastTimer);
             window._toastTimer = setTimeout(() => {
                 t.classList.add('opacity-0');
-            }, 2800);
+            }, 3000);
         }
 
         let touchStartX = 0;
