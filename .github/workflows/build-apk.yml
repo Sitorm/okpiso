@@ -29,7 +29,7 @@ jobs:
           mkdir -p www
           cp index.html www/index.html
 
-      - name: 5. Crear proyecto Android con Plugins
+      - name: 5. Crear proyecto Android con Plugins y Permisos
         run: |
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/filesystem @capacitor/share
@@ -37,6 +37,14 @@ jobs:
           npx cap add android
           npx cap sync android
           echo 'configurations.all { resolutionStrategy { force "org.jetbrains.kotlin:kotlin-stdlib:1.8.22", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22" } }' >> android/app/build.gradle
+          cat << 'EOF' > android/app/src/main/res/xml/file_paths.xml
+          <?xml version="1.0" encoding="utf-8"?>
+          <paths xmlns:android="http://schemas.android.com/apk/res/android">
+              <cache-path name="my_cache_images" path="." />
+              <external-path name="my_images" path="." />
+              <files-path name="my_files" path="." />
+          </paths>
+          EOF
 
       - name: 6. Poner icono OkPiso sin conflictos
         run: |
