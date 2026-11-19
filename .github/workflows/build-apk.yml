@@ -39,6 +39,7 @@ jobs:
       - name: 6. Poner icono OkPiso
         run: |
           if [ -f "okpiso-icon.png" ]; then
+            rm -rf android/app/src/main/res/mipmap-anydpi-v26
             for dir in android/app/src/main/res/mipmap-*; do
               cp okpiso-icon.png "$dir/ic_launcher.png"
               cp okpiso-icon.png "$dir/ic_launcher_round.png"
