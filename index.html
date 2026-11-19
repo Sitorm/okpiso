@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Mis Pisos">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Mis Pisos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f3f4f6;
+            color: #111111;
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Estilo limpio para campos editables inline que parecen texto normal */
+        .editable-field {
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            padding: 0 3px;
+            transition: all 0.15s ease;
+        }
+        .editable-field:hover {
+            background-color: #f9fafb;
+            border-color: #e5e7eb;
+        }
+        .editable-field:focus {
+            outline: none;
+            background-color: #ffffff;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.12);
+        }
+        /* Ocultar flechas de inputs numéricos */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* Animación suave al cambiar de ficha */
+        .card-transition {
+            transition: transform 0.22s ease, opacity 0.22s ease;
+        }
+        /* Estilo sutil para botones de candado */
+        .lock-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            padding: 2px;
+            transition: all 0.15s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start sm:justify-center p-2 sm:p-6 select-none sm:select-auto">
+
+    <!-- Barra Superior de Navegación y Acciones Rápidas (Fuera de la ficha blanca) -->
+    <div class="w-full max-w-[540px] flex items-center justify-between mb-2.5 px-1">
+        <!-- Izquierda: Índice rápido + Filtro de Favoritos -->
+        <div class="flex items-center gap-1.5">
+            <!-- Botón Índice Rápido -->
+            <button id="btnIndex" onclick="toggleIndexModal()" title="Ver listado de pisos"
+                class="p-2.5 rounded-xl bg-white shadow-sm border border-gray-200/80 text-gray-700 hover:bg-gray-50 active:scale-95 transition flex items-center gap-1.5 text-xs font-medium">
+                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h10"/>
+                </svg>
+                <span id="counterBadge" class="font-semibold text-gray-800">1/1</span>
+            </button>
+
+            <!-- Botón Filtro Solo Favoritos -->
+            <button id="btnFavFilter" onclick="toggleFavFilter()" title="Filtrar solo favoritos"
+                class="p-2.5 rounded-xl bg-white shadow-sm border border-gray-200/80 text-gray-600 hover:bg-gray-50 active:scale-95 transition">
+                <svg id="iconFavFilter" class="w-4 h-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Centro: Flechas Anterior / Siguiente -->
+        <div class="flex items-center gap-1">
+            <button id="btnPrev" onclick="navigateCard(-1)" title="Ficha anterior"
+                class="p-2.5 rounded-xl bg-white shadow-sm border border-gray-200/80 text-gray-700 hover:bg-gray-50 disabled:opacity-35 active:scale-95 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            <button id="btnNext" onclick="navigateCard(1)" title="Ficha siguiente"
+                class="p-2.5 rounded-xl bg-white shadow-sm border border-gray-200/80 text-gray-700 hover:bg-gray-50 disabled:opacity-35 active:scale-95 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Derecha: Nueva Ficha (+) y Compartir WhatsApp -->
+        <div class="flex items-center gap-1.5">
+            <!-- Botón Añadir Ficha (+) -->
+            <button onclick="addNewProperty()" title="Añadir nueva ficha en blanco"
+                class="p-2.5 rounded-xl bg-white shadow-sm border border-gray-200/80 text-gray-800 hover:bg-gray-50 active:scale-95 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.3" d="M12 4v16m8-8H4"/>
+                </svg>
+            </button>
+
+            <!-- Botón Compartir / Captura para WhatsApp -->
+            <button onclick="captureAndShareCard()" title="Enviar ficha como imagen por WhatsApp"
+                class="p-2.5 rounded-xl bg-[#25D366] text-white shadow-sm hover:bg-[#20bd5a] active:scale-95 transition flex items-center gap-1.5 text-xs font-semibold">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- TARJETA PRINCIPAL (Exactamente igual al formato de la imagen) -->
+    <main id="propertyCard" class="card-transition w-full max-w-[540px] bg-white rounded-none sm:rounded-sm shadow-sm px-6 py-6 sm:px-9 sm:py-8 relative">
+
+        <!-- Cabecera Discreta de Contacto Inmobiliaria + Enlace Oculto + Favorito -->
+        <div class="flex flex-wrap items-center justify-between gap-y-2 pb-4 mb-4 border-b border-gray-100 text-[12px] text-gray-500">
+            <!-- Datos de la inmobiliaria (Nombre, Teléfono, Email con margen amplio) -->
+            <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 flex-1 min-w-0 pr-2">
+                <input type="text" id="inpAgencyName" placeholder="Inmobiliaria" oninput="updateField('agencyName', this.value)"
+                    class="editable-field font-medium text-gray-700 w-40 sm:w-48 py-0.5" title="Nombre de la inmobiliaria">
+                <span id="sepAgency1" class="text-gray-300">•</span>
+                <div class="flex items-center gap-1">
+                    <input type="tel" id="inpAgencyPhone" placeholder="Teléfono" oninput="updateField('agencyPhone', this.value)"
+                        class="editable-field text-gray-600 w-28 sm:w-32 py-0.5" title="Teléfono de contacto">
+                    <a id="linkCallPhone" href="#" class="hidden text-[#2e7d32] hover:opacity-80 p-0.5" title="Llamar ahora">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                    </a>
+                </div>
+                <span id="sepAgency2" class="text-gray-300 hidden sm:inline">•</span>
+                <input type="email" id="inpAgencyEmail" placeholder="Email" oninput="updateField('agencyEmail', this.value)"
+                    class="editable-field text-gray-600 w-36 sm:w-44 py-0.5" title="Correo electrónico de la inmobiliaria">
+            </div>
+
+            <!-- Iconos discretos derecha: Enlace oculto al anuncio + Corazón Favorito + Borrar -->
+            <div id="cardActionIcons" class="flex items-center gap-1 ml-1">
+                <!-- Botón discreto enlace oculto al anuncio -->
+                <button id="btnListingLink" onclick="handleListingLinkClick()" title="Abrir o editar enlace del anuncio"
+                    class="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition relative">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                    </svg>
+                    <span id="dotHasLink" class="hidden absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#2e7d32]"></span>
+                </button>
+
+                <!-- Corazón Favorito -->
+                <button id="btnFavorite" onclick="toggleFavorite()" title="Marcar como favorito"
+                    class="p-1.5 rounded-lg text-gray-300 hover:text-rose-500 hover:bg-rose-50/60 transition">
+                    <svg id="iconHeart" class="w-4 h-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                    </svg>
+                </button>
+
+                <!-- Botón discreto eliminar ficha -->
+                <button id="btnDeleteCard" onclick="confirmDeleteCurrent()" title="Eliminar esta ficha"
+                    class="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50/60 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Panel desplegable para guardar/editar la URL oculta del anuncio o pegar texto -->
+        <div id="urlEditorBar" class="hidden mb-4 p-2.5 bg-gray-50 rounded-lg border border-gray-200 flex flex-col gap-2 text-xs">
+            <div class="flex flex-wrap items-center gap-2">
+                <input type="url" id="inpHiddenUrl" placeholder="Enlace web (Idealista, Fotocasa...)"
+                    oninput="updateField('listingUrl', this.value)"
+                    class="flex-1 min-w-[180px] bg-white border border-gray-200 rounded px-2.5 py-1.5 text-gray-700 focus:outline-none focus:border-[#2e7d32]">
+                <a id="btnVisitUrl" href="#" target="_blank" rel="noopener noreferrer"
+                    class="px-2.5 py-1.5 bg-[#2e7d32] text-white rounded font-medium hover:bg-[#256628] whitespace-nowrap">
+                    Abrir web
+                </a>
+                <button onclick="toggleUrlBar(false)" class="p-1 text-gray-400 hover:text-gray-700">✕</button>
+            </div>
+            <div class="flex flex-col gap-2">
+                <textarea id="inpPasteAdText" rows="3" placeholder="Pega aquí TODO el texto que hayas copiado de la página web del piso (título, precio, m², habitaciones, planta, ascensor...)"
+                    class="w-full bg-white border border-gray-200 rounded px-2.5 py-1.5 text-gray-700 focus:outline-none focus:border-[#2e7d32] resize-y"></textarea>
+                <div class="flex justify-end">
+                    <button id="btnAutoFillUrl" onclick="autoFillFromUrl()"
+                        class="w-full sm:w-auto px-4 py-2 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 whitespace-nowrap flex items-center justify-center gap-1.5 transition">
+                        <span id="autoFillSpinner" class="hidden animate-spin">⏳</span>
+                        <span id="autoFillText">Extraer y rellenar ficha</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Título y Subtítulo del piso -->
+        <div class="mb-3">
+            <input type="text" id="inpTitle" placeholder="Título del piso (ej. Piso en centro, 4 hab)"
+                oninput="updateField('title', this.value)"
+                class="editable-field w-full text-[22px] sm:text-[26px] font-bold tracking-tight text-[#111111] leading-snug">
+            <input type="text" id="inpSubtitle" placeholder="Subtítulo o condiciones (ej. Con comisión incluida y sin broker)"
+                oninput="updateField('subtitle', this.value)"
+                class="editable-field w-full text-[13px] sm:text-[14px] text-[#666666] mt-0.5">
+        </div>
+
+        <!-- 5 Características del piso (Hab., Altura, Ascensor, m², Extra) + Acceso rápido extracción -->
+        <div class="mb-4">
+            <div class="flex items-center justify-end mb-1.5">
+                <button id="btnQuickExtractLink" onclick="toggleUrlBar(true)"
+                    class="text-[11px] font-medium text-[#2e7d32] hover:underline flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                    </svg>
+                    <span>Pegar enlace o texto web</span>
+                </button>
+            </div>
+            <div class="grid grid-cols-5 gap-1.5 text-center">
+                <div class="bg-gray-50/90 border border-gray-200/70 rounded-lg px-1.5 py-1.5">
+                    <div class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Hab.</div>
+                    <input type="text" id="inpRooms" oninput="updateField('rooms', this.value)"
+                        class="editable-field w-full text-center text-[12px] font-bold text-gray-800 mt-0.5">
+                </div>
+                <div class="bg-gray-50/90 border border-gray-200/70 rounded-lg px-1.5 py-1.5">
+                    <div class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Altura</div>
+                    <input type="text" id="inpFloor" oninput="updateField('floor', this.value)"
+                        class="editable-field w-full text-center text-[12px] font-bold text-gray-800 mt-0.5">
+                </div>
+                <div class="bg-gray-50/90 border border-gray-200/70 rounded-lg px-1.5 py-1.5">
+                    <div class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Ascensor</div>
+                    <input type="text" id="inpElevator" oninput="updateField('elevator', this.value)"
+                        class="editable-field w-full text-center text-[12px] font-bold text-gray-800 mt-0.5">
+                </div>
+                <div class="bg-gray-50/90 border border-gray-200/70 rounded-lg px-1.5 py-1.5">
+                    <div class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">m²</div>
+                    <input type="text" id="inpSqm" oninput="updateField('sqm', this.value)"
+                        class="editable-field w-full text-center text-[12px] font-bold text-gray-800 mt-0.5">
+                </div>
+                <div class="bg-gray-50/90 border border-gray-200/70 rounded-lg px-1.5 py-1.5">
+                    <div class="text-[9px] uppercase tracking-wider text-gray-400 font-semibold">Extra</div>
+                    <input type="text" id="inpExtraNote" oninput="updateField('extraNote', this.value)"
+                        class="editable-field w-full text-center text-[12px] font-bold text-gray-800 mt-0.5">
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLA 1: DESGLOSE DE PRECIO Y REFORMAS -->
+        <div class="divide-y divide-[#eeeeee] border-t border-b-[1.5px] border-t-[#eeeeee] border-b-[#111111] mt-4 text-[14px] sm:text-[15px]">
+            <!-- Precio del piso -->
+            <div class="py-3 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-[#111111] font-normal">Precio del piso</span>
+                    <button id="btnLockPrice" onclick="toggleLockPrice()" title="Bloquear precio del piso"
+                        class="lock-btn text-gray-300 hover:text-gray-600"></button>
+                </div>
+                <div class="flex items-center font-bold text-[#111111]">
+                    <input type="text" id="inpPrice" inputmode="numeric"
+                        onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleNumericInput('price', this)"
+                        class="editable-field text-right font-bold w-24 sm:w-28 text-[#111111]">
+                    <span class="ml-0.5">€</span>
+                </div>
+            </div>
+
+            <!-- Comisión agencia -->
+            <div class="py-3 flex items-center justify-between gap-2">
+                <span class="text-[#111111] font-normal">Comisión agencia</span>
+                <div class="flex items-center font-bold text-[#111111]">
+                    <input type="text" id="inpAgencyLabel" oninput="updateField('agencyLabel', this.value)"
+                        class="editable-field text-right font-bold w-20 sm:w-24 text-[#111111]">
+                    <span class="ml-1">(</span>
+                    <input type="text" id="inpAgencyFee" inputmode="numeric"
+                        onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleNumericInput('agencyFee', this)"
+                        class="editable-field text-right font-bold w-16 sm:w-20 text-[#111111]">
+                    <span class="ml-0.5">€)</span>
+                </div>
+            </div>
+
+            <!-- Intermediación hipoteca -->
+            <div class="py-3 flex items-center justify-between gap-2">
+                <span class="text-[#111111] font-normal">Intermediación hipoteca</span>
+                <div class="flex items-center font-bold text-[#111111]">
+                    <input type="text" id="inpBrokerLabel" oninput="updateField('brokerLabel', this.value)"
+                        class="editable-field text-right font-bold w-28 sm:w-32 text-[#111111]">
+                    <span class="ml-1">(</span>
+                    <input type="text" id="inpBrokerFee" inputmode="numeric"
+                        onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleNumericInput('brokerFee', this)"
+                        class="editable-field text-right font-bold w-16 sm:w-20 text-[#111111]">
+                    <span class="ml-0.5">€)</span>
+                </div>
+            </div>
+
+            <!-- Reformas y pintura (estim.) -->
+            <div class="py-3 flex items-center justify-between gap-2">
+                <span class="text-[#111111] font-normal">Reformas y pintura (estim.)</span>
+                <div class="flex items-center font-bold text-[#111111]">
+                    <input type="text" id="inpRenovation" inputmode="numeric"
+                        onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleNumericInput('renovation', this)"
+                        class="editable-field text-right font-bold w-20 sm:w-24 text-[#111111]">
+                    <span class="ml-0.5">€</span>
+                </div>
+            </div>
+
+            <!-- Precio + reformas -->
+            <div class="py-3.5 flex items-center justify-between gap-2 font-bold text-[#111111]">
+                <span>Precio + reformas</span>
+                <span id="valPricePlusRenovation">0 €</span>
+            </div>
+        </div>
+
+        <!-- TABLA 2: COMPARATIVA ITP 5% (*) VS ITP 10% -->
+        <div class="mt-5 text-[13px] sm:text-[15px]">
+            <!-- Cabecera columnas -->
+            <div class="grid grid-cols-12 items-center pb-2.5 font-bold">
+                <div class="col-span-6"></div>
+                <div class="col-span-3 text-right text-[#2e7d32] whitespace-nowrap">ITP 5% (*)</div>
+                <div class="col-span-3 text-right text-[#111111] whitespace-nowrap">ITP 10%</div>
+            </div>
+
+            <!-- Fila: ITP (impuesto) -->
+            <div class="grid grid-cols-12 items-center py-2">
+                <div class="col-span-6 text-[#111111]">ITP (impuesto)</div>
+                <div id="valItp5" class="col-span-3 text-right font-bold text-[#111111] whitespace-nowrap">0 €</div>
+                <div id="valItp10" class="col-span-3 text-right font-bold text-[#111111] whitespace-nowrap">0 €</div>
+            </div>
+
+            <!-- Fila: Otros gastos (estim.) -->
+            <div class="grid grid-cols-12 items-center py-2">
+                <div class="col-span-6 text-[#111111]" title="Estimación ~1,5% (notaría, registro, gestoría y tasación). Editable.">Otros gastos (estim.)</div>
+                <div class="col-span-3 flex items-center justify-end font-bold text-[#111111] whitespace-nowrap">
+                    <span>~</span>
+                    <input type="text" id="inpOtherExpenses" inputmode="numeric"
+                        onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleNumericInput('otherExpenses', this)"
+                        class="editable-field text-right font-bold w-14 sm:w-16 text-[#111111]" title="Estimación ~1,5% (notaría, registro, gestoría y tasación). Pulsa para editar.">
+                    <span class="ml-0.5">€</span>
+                </div>
+                <div id="valOtherExpensesRight" class="col-span-3 text-right font-bold text-[#111111] whitespace-nowrap">~0 €</div>
+            </div>
+
+            <!-- Fila: Total operación -->
+            <div class="grid grid-cols-12 items-center py-2">
+                <div class="col-span-6 text-[#111111]">Total operación</div>
+                <div id="valTotal5" class="col-span-3 text-right font-bold text-[#111111] whitespace-nowrap">~0 €</div>
+                <div id="valTotal10" class="col-span-3 text-right font-bold text-[#111111] whitespace-nowrap">~0 €</div>
+            </div>
+
+            <!-- Fila: Dispones de (Dinero personal disponible editable) -->
+            <div class="grid grid-cols-12 items-center py-2">
+                <div class="col-span-6 flex items-center text-[#111111]">
+                    <span>Dispones de</span>
+                    <input type="text" id="inpAvailableCash" inputmode="numeric"
+                        onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleAvailableCashInput(this)"
+                        class="editable-field text-right font-medium w-20 sm:w-24 ml-1.5 mr-0.5 text-[#111111] bg-green-50/40" title="Dinero propio disponible">
+                    <span>€</span>
+                </div>
+                <div id="valMissing5" class="col-span-3 text-right font-bold text-[#111111] whitespace-nowrap">~0 €</div>
+                <div id="valMissing10" class="col-span-3 text-right font-bold text-[#111111] whitespace-nowrap">~0 €</div>
+            </div>
+
+            <!-- Fila: Cuota 1 (Años y cuota bidireccionales con candados) -->
+            <div class="grid grid-cols-12 items-center py-2">
+                <div class="col-span-6 flex items-center flex-wrap text-[#111111] text-[12px] sm:text-[14px]">
+                    <span>Cuota</span>
+                    <input type="text" id="inpYears1" inputmode="numeric"
+                        oninput="handleYearsInput(1, this)"
+                        class="editable-field text-center font-normal w-7 sm:w-8 mx-0.5 text-[#111111]" title="Años de hipoteca">
+                    <span id="lblMonths1" class="hidden text-[11px] sm:text-[12px] mr-0.5">y<span id="valMonths1">0</span>m</span>
+                    <span>años (3%)</span>
+                    <button id="btnLockYears1" onclick="toggleLockYears(1)" title="Bloquear años de hipoteca"
+                        class="lock-btn ml-1 text-gray-300 hover:text-gray-600"></button>
+                </div>
+                <div class="col-span-3 flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[11px] sm:text-[13px]">
+                    <span>~</span>
+                    <input type="text" id="inpQuota1_5" inputmode="numeric"
+                        onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(1, 5, this)"
+                        class="editable-field text-right font-bold w-9 sm:w-11 text-[#111111]" title="Cuota mensual (ITP 5%)">
+                    <span class="ml-0.5">€/mes</span>
+                    <button id="btnLockQuota1_5" onclick="toggleLockQuota(1, 5)" title="Fijar presupuesto mensual (ITP 5%)"
+                        class="lock-btn ml-0.5 text-gray-300 hover:text-gray-600"></button>
+                </div>
+                <div class="col-span-3 flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[11px] sm:text-[13px]">
+                    <span>~</span>
+                    <input type="text" id="inpQuota1_10" inputmode="numeric"
+                        onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(1, 10, this)"
+                        class="editable-field text-right font-bold w-9 sm:w-11 text-[#111111]" title="Cuota mensual (ITP 10%)">
+                    <span class="ml-0.5">€/mes</span>
+                    <button id="btnLockQuota1_10" onclick="toggleLockQuota(1, 10)" title="Fijar presupuesto mensual (ITP 10%)"
+                        class="lock-btn ml-0.5 text-gray-300 hover:text-gray-600"></button>
+                </div>
+            </div>
+
+            <!-- Fila: Cuota 2 (Años y cuota bidireccionales con candados) -->
+            <div class="grid grid-cols-12 items-center py-2">
+                <div class="col-span-6 flex items-center flex-wrap text-[#111111] text-[12px] sm:text-[14px]">
+                    <span>Cuota</span>
+                    <input type="text" id="inpYears2" inputmode="numeric"
+                        oninput="handleYearsInput(2, this)"
+                        class="editable-field text-center font-normal w-7 sm:w-8 mx-0.5 text-[#111111]" title="Años de hipoteca">
+                    <span id="lblMonths2" class="hidden text-[11px] sm:text-[12px] mr-0.5">y<span id="valMonths2">0</span>m</span>
+                    <span>años (3%)</span>
+                    <button id="btnLockYears2" onclick="toggleLockYears(2)" title="Bloquear años de hipoteca"
+                        class="lock-btn ml-1 text-gray-300 hover:text-gray-600"></button>
+                </div>
+                <div class="col-span-3 flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[11px] sm:text-[13px]">
+                    <span>~</span>
+                    <input type="text" id="inpQuota2_5" inputmode="numeric"
+                        onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(2, 5, this)"
+                        class="editable-field text-right font-bold w-9 sm:w-11 text-[#111111]" title="Cuota mensual (ITP 5%)">
+                    <span class="ml-0.5">€/mes</span>
+                    <button id="btnLockQuota2_5" onclick="toggleLockQuota(2, 5)" title="Fijar presupuesto mensual (ITP 5%)"
+                        class="lock-btn ml-0.5 text-gray-300 hover:text-gray-600"></button>
+                </div>
+                <div class="col-span-3 flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[11px] sm:text-[13px]">
+                    <span>~</span>
+                    <input type="text" id="inpQuota2_10" inputmode="numeric"
+                        onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(2, 10, this)"
+                        class="editable-field text-right font-bold w-9 sm:w-11 text-[#111111]" title="Cuota mensual (ITP 10%)">
+                    <span class="ml-0.5">€/mes</span>
+                    <button id="btnLockQuota2_10" onclick="toggleLockQuota(2, 10)" title="Fijar presupuesto mensual (ITP 10%)"
+                        class="lock-btn ml-0.5 text-gray-300 hover:text-gray-600"></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Línea divisoria inferior -->
+        <div class="border-t border-[#eeeeee] mt-6 pt-3.5 flex items-center justify-between text-[13px]">
+            <span id="txtUpdatedDate" class="text-[#777777]"></span>
+            <span class="text-[11px] text-gray-400 tracking-wide">Sito.rm</span>
+        </div>
+    </main>
+
+    <!-- Indicador de puntos inferior para deslizar -->
+    <div id="dotsIndicator" class="flex items-center justify-center gap-1.5 mt-3"></div>
+
+    <!-- MODAL ÍNDICE RÁPIDO DE FICHAS -->
+    <div id="indexModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-[1px] z-50 flex items-center justify-center p-4" onclick="if(event.target===this) toggleIndexModal()">
+        <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-xl">
+            <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                <h3 class="font-bold text-gray-900 text-base">Pisos guardados</h3>
+                <button onclick="toggleIndexModal()" class="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg">✕</button>
+            </div>
+            <div id="indexList" class="mt-3 max-h-72 overflow-y-auto divide-y divide-gray-100"></div>
+            <div class="mt-4 flex flex-col gap-2">
+                <button onclick="toggleIndexModal(); addNewProperty();" class="w-full py-2.5 bg-gray-900 text-white rounded-xl text-sm font-semibold hover:bg-gray-800 transition">
+                    + Añadir ficha nueva
+                </button>
+                <button onclick="toggleIndexModal(); exportHtmlWithData();" class="w-full py-2.5 bg-[#2e7d32] text-white rounded-xl text-xs font-semibold hover:bg-[#256628] transition">
+                    Descargar copia con mis pisos (.html)
+                </button>
+                <button onclick="toggleIndexModal(); resetToBlankSheet();" class="w-full py-2 bg-gray-100 text-gray-700 rounded-xl text-xs font-medium hover:bg-gray-200 transition">
+                    Limpiar todo y empezar hoja en blanco
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN BORRADO (Sin alert/confirm nativo) -->
+    <div id="deleteModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-[1px] z-50 flex items-center justify-center p-4" onclick="if(event.target===this) closeDeleteModal()">
+        <div class="bg-white rounded-2xl max-w-xs w-full p-5 shadow-xl text-center space-y-4">
+            <p class="font-semibold text-gray-900 text-sm">¿Eliminar esta ficha?</p>
+            <p class="text-xs text-gray-500">Esta acción quitará este piso de tu lista guardada.</p>
+            <div class="flex gap-2">
+                <button onclick="closeDeleteModal()" class="flex-1 py-2 rounded-xl bg-gray-100 text-gray-700 text-xs font-semibold">Cancelar</button>
+                <button onclick="executeDeleteCurrent()" class="flex-1 py-2 rounded-xl bg-red-600 text-white text-xs font-semibold">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL VISTA PREVIA CAPTURA IMAGEN -->
+    <div id="shareModal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-[1px] z-50 flex items-center justify-center p-4" onclick="if(event.target===this) closeShareModal()">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-gray-100">
+                <h3 class="font-bold text-gray-900 text-base">Enviar ficha como imagen</h3>
+                <button onclick="closeShareModal()" class="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg">✕</button>
+            </div>
+            <div class="border border-gray-200 rounded-xl overflow-hidden bg-gray-50 max-h-72 overflow-y-auto flex justify-center">
+                <img id="capturedPreviewImg" src="" alt="Vista previa de la ficha" class="w-full h-auto object-contain">
+            </div>
+            <div class="flex flex-col gap-2">
+                <button onclick="shareCapturedImage()" class="w-full py-3 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl text-sm font-semibold shadow-sm transition">
+                    Compartir imagen por WhatsApp
+                </button>
+                <button onclick="downloadCapturedImage()" class="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-semibold transition">
+                    Guardar foto en galería
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast discreto de notificación -->
+    <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-50">
+        Guardado
+    </div>
+
+    <!-- DATOS INCRUSTADOS PARA PORTABILIDAD TOTAL AL ENVIAR EL ARCHIVO -->
+    <script id="embedded-data" type="application/json">
+    {
+        "defaultAvailableCash": 0,
+        "properties": [
+            {
+                "id": "piso-inicial-1",
+                "title": "",
+                "subtitle": "",
+                "rooms": "",
+                "floor": "",
+                "elevator": "",
+                "sqm": "",
+                "extraNote": "",
+                "price": 0,
+                "agencyLabel": "incluida",
+                "agencyFee": 0,
+                "brokerLabel": "sin obligación",
+                "brokerFee": 0,
+                "renovation": 0,
+                "otherExpenses": 0,
+                "otherExpensesManual": false,
+                "availableCash": 0,
+                "years1": 20,
+                "months1": 0,
+                "years2": 22,
+                "months2": 0,
+                "lockPrice": false,
+                "lockYears1": false,
+                "lockYears2": false,
+                "lockedQuotaTarget": null,
+                "lockedQuotaValue": 0,
+                "agencyName": "",
+                "agencyPhone": "",
+                "agencyEmail": "",
+                "listingUrl": "",
+                "favorite": false,
+                "updatedAt": ""
+            }
+        ]
+    }
+    </script>
+
+    <script>
+        const STORAGE_KEY = 'instinct_fichas_pisos_v3';
+        const SVG_LOCK_CLOSED = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>`;
+        const SVG_LOCK_OPEN = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>`;
+
+        let appState = {
+            defaultAvailableCash: 0,
+            properties: [],
+            currentIndex: 0,
+            onlyFavorites: false
+        };
+
+        // Crea una ficha nueva totalmente en blanco manteniendo el ahorro disponible habitual
+        function createBlankProperty(isFirst = false) {
+            return {
+                id: 'piso-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6),
+                title: '',
+                subtitle: '',
+                rooms: '',
+                floor: '',
+                elevator: '',
+                sqm: '',
+                extraNote: '',
+                price: 0,
+                agencyLabel: 'incluida',
+                agencyFee: 0,
+                brokerLabel: 'sin obligación',
+                brokerFee: 0,
+                renovation: 0,
+                otherExpenses: 0,
+                otherExpensesManual: false,
+                availableCash: isFirst ? 0 : (appState.defaultAvailableCash || 0),
+                years1: 20,
+                months1: 0,
+                years2: 22,
+                months2: 0,
+                lockPrice: false,
+                lockYears1: false,
+                lockYears2: false,
+                lockedQuotaTarget: null,
+                lockedQuotaValue: 0,
+                agencyName: '',
+                agencyPhone: '',
+                agencyEmail: '',
+                listingUrl: '',
+                favorite: false,
+                updatedAt: getFormattedToday()
+            };
+        }
+
+        function getFormattedToday() {
+            const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+            const d = new Date();
+            return `Actualizado el ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        function initApp() {
+            try {
+                const rawSaved = localStorage.getItem(STORAGE_KEY);
+                if (rawSaved) {
+                    const parsed = JSON.parse(rawSaved);
+                    if (parsed && Array.isArray(parsed.properties) && parsed.properties.length > 0) {
+                        appState.defaultAvailableCash = Number(parsed.defaultAvailableCash) || 0;
+                        appState.properties = parsed.properties;
+                        appState.currentIndex = Math.min(parsed.currentIndex || 0, parsed.properties.length - 1);
+                        renderCurrentCard();
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.warn('No se pudo leer localStorage:', e);
+            }
+
+            // Si no hay datos en navegador, cargar desde #embedded-data
+            try {
+                const embeddedEl = document.getElementById('embedded-data');
+                if (embeddedEl && embeddedEl.textContent.trim()) {
+                    const embedded = JSON.parse(embeddedEl.textContent);
+                    if (embedded && Array.isArray(embedded.properties) && embedded.properties.length > 0) {
+                        appState.defaultAvailableCash = Number(embedded.defaultAvailableCash) || 0;
+                        appState.properties = embedded.properties.map(p => ({
+                            ...createBlankProperty(true),
+                            ...p,
+                            updatedAt: p.updatedAt || getFormattedToday()
+                        }));
+                        appState.currentIndex = 0;
+                        renderCurrentCard();
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.warn('Error leyendo embedded-data:', e);
+            }
+
+            appState.properties = [createBlankProperty(true)];
+            appState.currentIndex = 0;
+            renderCurrentCard();
+        }
+
+        function saveState(updateTimestamp = true) {
+            const prop = getCurrentProperty();
+            if (prop && updateTimestamp) {
+                prop.updatedAt = getFormattedToday();
+                const dateEl = document.getElementById('txtUpdatedDate');
+                if (dateEl) dateEl.textContent = prop.updatedAt;
+            }
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    defaultAvailableCash: appState.defaultAvailableCash,
+                    properties: appState.properties,
+                    currentIndex: appState.currentIndex
+                }));
+            } catch (e) {
+                console.warn('No se pudo guardar en localStorage:', e);
+            }
+        }
+
+        function getCurrentProperty() {
+            if (!appState.properties.length) {
+                appState.properties = [createBlankProperty(true)];
+                appState.currentIndex = 0;
+            }
+            if (appState.currentIndex < 0 || appState.currentIndex >= appState.properties.length) {
+                appState.currentIndex = 0;
+            }
+            return appState.properties[appState.currentIndex];
+        }
+
+        function formatNumberES(num) {
+            const n = Math.round(Number(num) || 0);
+            return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function parseNumberES(val) {
+            const digits = String(val || '').replace(/[^\d]/g, '');
+            return digits ? parseInt(digits, 10) : 0;
+        }
+
+        function unformatInput(el) {
+            const val = parseNumberES(el.value);
+            el.value = val === 0 ? '' : String(val);
+        }
+
+        function formatAllInputs() {
+            const prop = getCurrentProperty();
+            document.getElementById('inpPrice').value = formatNumberES(prop.price);
+            document.getElementById('inpAgencyFee').value = formatNumberES(prop.agencyFee);
+            document.getElementById('inpBrokerFee').value = formatNumberES(prop.brokerFee);
+            document.getElementById('inpRenovation').value = formatNumberES(prop.renovation);
+            document.getElementById('inpOtherExpenses').value = formatNumberES(prop.otherExpenses);
+            document.getElementById('inpAvailableCash').value = formatNumberES(prop.availableCash);
+            recalculateAll(false);
+        }
+
+        function updateField(field, value) {
+            const prop = getCurrentProperty();
+            prop[field] = value;
+
+            if (field === 'agencyPhone') {
+                const callLink = document.getElementById('linkCallPhone');
+                const cleanPhone = String(value || '').replace(/\s+/g, '');
+                if (cleanPhone.length >= 6) {
+                    callLink.href = 'tel:' + cleanPhone;
+                    callLink.classList.remove('hidden');
+                } else {
+                    callLink.classList.add('hidden');
+                }
+            }
+
+            if (field === 'listingUrl') {
+                const dot = document.getElementById('dotHasLink');
+                const visitBtn = document.getElementById('btnVisitUrl');
+                const cleanUrl = String(value || '').trim();
+                if (cleanUrl) {
+                    dot.classList.remove('hidden');
+                    visitBtn.href = cleanUrl.startsWith('http') ? cleanUrl : 'https://' + cleanUrl;
+                } else {
+                    dot.classList.add('hidden');
+                    visitBtn.href = '#';
+                }
+            }
+
+            saveState(true);
+        }
+
+        function handleNumericInput(field, el) {
+            const prop = getCurrentProperty();
+            if (field === 'price' && prop.lockPrice) {
+                el.value = formatNumberES(prop.price);
+                showToast('El precio del piso está bloqueado');
+                return;
+            }
+            prop[field] = parseNumberES(el.value);
+            if (field === 'otherExpenses') {
+                prop.otherExpensesManual = true;
+            }
+            if (field === 'price' && !prop.otherExpensesManual) {
+                prop.otherExpenses = calculateDefaultOtherExpenses(prop.price);
+                document.getElementById('inpOtherExpenses').value = formatNumberES(prop.otherExpenses);
+            }
+
+            // Si hay una cuota mensual fijada con candado, mantener esa cuota y ajustar los años
+            if (prop.lockedQuotaTarget) {
+                applyLockedQuotaToYears(prop);
+            } else {
+                prop.months1 = 0;
+                prop.months2 = 0;
+            }
+            recalculateAll(false);
+            saveState(true);
+        }
+
+        // Estimación coherente (~1,5% del precio para notaría, registro, gestoría y tasación; 0 € si no hay precio)
+        function calculateDefaultOtherExpenses(price) {
+            const p = Number(price) || 0;
+            if (p <= 0) return 0;
+            return Math.max(1800, Math.round(p * 0.015));
+        }
+
+        function handleAvailableCashInput(el) {
+            const prop = getCurrentProperty();
+            const val = parseNumberES(el.value);
+            prop.availableCash = val;
+            appState.defaultAvailableCash = val;
+            if (prop.lockedQuotaTarget) {
+                applyLockedQuotaToYears(prop);
+            } else {
+                prop.months1 = 0;
+                prop.months2 = 0;
+            }
+            recalculateAll(false);
+            saveState(true);
+        }
+
+        // Fórmula hipotecaria sistema francés al 3% anual
+        function calcMonthlyMortgage(principal, years, months = 0) {
+            const P = Number(principal) || 0;
+            const totalMonths = (Number(years) || 0) * 12 + (Number(months) || 0);
+            if (P <= 0 || totalMonths <= 0) return 0;
+            const r = 0.03 / 12;
+            const factor = Math.pow(1 + r, totalMonths);
+            return Math.round((P * r * factor) / (factor - 1));
+        }
+
+        // Calcula capital máximo financiable dados una cuota mensual y un plazo en años/meses al 3%
+        function calcMaxPrincipalFromQuota(targetQuota, years, months = 0) {
+            const M = Number(targetQuota) || 0;
+            const totalMonths = (Number(years) || 0) * 12 + (Number(months) || 0);
+            if (M <= 0 || totalMonths <= 0) return 0;
+            const r = 0.03 / 12;
+            const factor = Math.pow(1 + r, totalMonths);
+            return (M * (factor - 1)) / (r * factor);
+        }
+
+        // Calcula meses totales necesarios para alcanzar una cuota mensual deseada al 3% anual
+        function calcMonthsFromQuota(principal, targetQuota) {
+            const P = Number(principal) || 0;
+            const M = Number(targetQuota) || 0;
+            if (P <= 0 || M <= 0) return 240;
+            const r = 0.03 / 12;
+            if (M <= P * r) return 40 * 12; // Máximo 40 años si la cuota no cubre ni intereses
+            const n = -Math.log(1 - (P * r) / M) / Math.log(1 + r);
+            return Math.max(12, Math.min(40 * 12, Math.round(n)));
+        }
+
+        // Ajusta los años de la fila bloqueada para respetar la cuota fija cuando cambia el precio/ahorro
+        function applyLockedQuotaToYears(prop) {
+            if (!prop.lockedQuotaTarget) return;
+            const [rowStr, itpStr] = prop.lockedQuotaTarget.split('_');
+            const rowNum = Number(rowStr);
+            const itpType = Number(itpStr);
+            const targetQuota = Number(prop.lockedQuotaValue) || 0;
+            if (targetQuota <= 0) return;
+
+            if (rowNum === 1 && prop.lockYears1) prop.lockYears1 = false;
+            if (rowNum === 2 && prop.lockYears2) prop.lockYears2 = false;
+
+            const price = Number(prop.price) || 0;
+            const agencyFee = Number(prop.agencyFee) || 0;
+            const brokerFee = Number(prop.brokerFee) || 0;
+            const renovation = Number(prop.renovation) || 0;
+            const otherExpenses = Number(prop.otherExpenses) || 0;
+            const availableCash = Number(prop.availableCash) || 0;
+            const itp = Math.round(price * (itpType === 5 ? 0.05 : 0.10));
+            const principal = Math.max(0, price + agencyFee + brokerFee + renovation + itp + otherExpenses - availableCash);
+
+            const totalMonths = principal > 0 ? calcMonthsFromQuota(principal, targetQuota) : 240;
+            const yrs = Math.floor(totalMonths / 12);
+            const mos = totalMonths % 12;
+
+            if (rowNum === 1) {
+                prop.years1 = yrs;
+                prop.months1 = mos;
+            } else {
+                prop.years2 = yrs;
+                prop.months2 = mos;
+            }
+        }
+
+        // Calcula la oferta máxima del piso cuando tanto la cuota como los años están bloqueados
+        function solveOfferPriceFromQuotaAndYears(rowNum, itpType, targetQuota) {
+            const prop = getCurrentProperty();
+            if (prop.lockPrice) {
+                showToast('Desbloquea el precio del piso para calcular la oferta');
+                return false;
+            }
+
+            const years = rowNum === 1 ? (prop.years1 || 20) : (prop.years2 || 22);
+            const months = rowNum === 1 ? (prop.months1 || 0) : (prop.months2 || 0);
+            const maxPrincipal = calcMaxPrincipalFromQuota(targetQuota, years, months);
+            const totalBudget = maxPrincipal + (Number(prop.availableCash) || 0);
+            const fixedExtras = (Number(prop.agencyFee) || 0) + (Number(prop.brokerFee) || 0) + (Number(prop.renovation) || 0);
+            const itpRate = itpType === 5 ? 0.05 : 0.10;
+
+            if (prop.otherExpensesManual) {
+                const otherExp = Number(prop.otherExpenses) || 0;
+                const rawPrice = (totalBudget - fixedExtras - otherExp) / (1 + itpRate);
+                prop.price = Math.max(0, Math.round(rawPrice));
+            } else {
+                const priceHigh = (totalBudget - fixedExtras) / (1 + itpRate + 0.015);
+                if (priceHigh >= 120000) {
+                    prop.price = Math.round(priceHigh);
+                    prop.otherExpenses = calculateDefaultOtherExpenses(prop.price);
+                } else {
+                    const priceLow = (totalBudget - fixedExtras - 1800) / (1 + itpRate);
+                    if (priceLow > 0) {
+                        prop.price = Math.round(priceLow);
+                        prop.otherExpenses = calculateDefaultOtherExpenses(prop.price);
+                    } else {
+                        prop.price = 0;
+                        prop.otherExpenses = 0;
+                    }
+                }
+            }
+
+            document.getElementById('inpPrice').value = formatNumberES(prop.price);
+            document.getElementById('inpOtherExpenses').value = formatNumberES(prop.otherExpenses);
+            return true;
+        }
+
+        function toggleLockPrice() {
+            const prop = getCurrentProperty();
+            prop.lockPrice = !prop.lockPrice;
+            updateLocksUI();
+            saveState(false);
+            showToast(prop.lockPrice ? 'Precio del piso bloqueado' : 'Precio del piso desbloqueado');
+        }
+
+        function toggleLockYears(rowNum) {
+            const prop = getCurrentProperty();
+            if (rowNum === 1) {
+                prop.lockYears1 = !prop.lockYears1;
+            } else {
+                prop.lockYears2 = !prop.lockYears2;
+            }
+            const isNowLocked = rowNum === 1 ? prop.lockYears1 : prop.lockYears2;
+
+            // Si esta fila también tiene una cuota bloqueada, calcular directamente la oferta del piso
+            if (isNowLocked && prop.lockedQuotaTarget && prop.lockedQuotaTarget.startsWith(`${rowNum}_`)) {
+                const itpType = Number(prop.lockedQuotaTarget.split('_')[1]);
+                if (solveOfferPriceFromQuotaAndYears(rowNum, itpType, prop.lockedQuotaValue)) {
+                    showToast(`Oferta calculada: ${formatNumberES(prop.price)} €`);
+                }
+            } else {
+                showToast(isNowLocked ? `Plazo de ${rowNum === 1 ? prop.years1 : prop.years2} años bloqueado` : 'Plazo en años desbloqueado');
+            }
+
+            recalculateAll(false);
+            updateLocksUI();
+            saveState(true);
+        }
+
+        function toggleLockQuota(rowNum, itpType) {
+            const prop = getCurrentProperty();
+            const key = `${rowNum}_${itpType}`;
+
+            if (prop.lockedQuotaTarget === key) {
+                prop.lockedQuotaTarget = null;
+                prop.lockedQuotaValue = 0;
+                updateLocksUI();
+                recalculateAll(false);
+                saveState(false);
+                showToast('Presupuesto mensual desbloqueado');
+                return;
+            }
+
+            const inpEl = document.getElementById(`inpQuota${key}`);
+            let currentVal = parseNumberES(inpEl ? inpEl.value : 0);
+            if (currentVal <= 0) currentVal = 300;
+
+            prop.lockedQuotaTarget = key;
+            prop.lockedQuotaValue = currentVal;
+
+            const isRowYearsLocked = rowNum === 1 ? prop.lockYears1 : prop.lockYears2;
+            if (isRowYearsLocked) {
+                if (solveOfferPriceFromQuotaAndYears(rowNum, itpType, currentVal)) {
+                    showToast(`Cuota fija ${formatNumberES(currentVal)} €/mes → Oferta: ${formatNumberES(prop.price)} €`);
+                }
+            } else {
+                applyLockedQuotaToYears(prop);
+                showToast(`Presupuesto fijo: ${formatNumberES(currentVal)} €/mes (ITP ${itpType}%)`);
+            }
+
+            recalculateAll(false);
+            updateLocksUI();
+            saveState(true);
+        }
+
+        function updateLocksUI() {
+            const prop = getCurrentProperty();
+
+            // Candado Precio del piso
+            const btnPrice = document.getElementById('btnLockPrice');
+            const inpPrice = document.getElementById('inpPrice');
+            if (btnPrice && inpPrice) {
+                btnPrice.innerHTML = prop.lockPrice ? SVG_LOCK_CLOSED : SVG_LOCK_OPEN;
+                btnPrice.className = `lock-btn ${prop.lockPrice ? 'text-[#2e7d32] bg-green-50 border border-green-200' : 'text-gray-300 hover:text-gray-600'}`;
+                inpPrice.readOnly = !!prop.lockPrice;
+                inpPrice.classList.toggle('bg-green-50/60', !!prop.lockPrice);
+                inpPrice.classList.toggle('text-[#2e7d32]', !!prop.lockPrice);
+            }
+
+            // Candados Años fila 1 y fila 2
+            [1, 2].forEach(r => {
+                const locked = r === 1 ? !!prop.lockYears1 : !!prop.lockYears2;
+                const btn = document.getElementById(`btnLockYears${r}`);
+                const inp = document.getElementById(`inpYears${r}`);
+                if (btn && inp) {
+                    btn.innerHTML = locked ? SVG_LOCK_CLOSED : SVG_LOCK_OPEN;
+                    btn.className = `lock-btn ml-1 ${locked ? 'text-[#2e7d32] bg-green-50 border border-green-200' : 'text-gray-300 hover:text-gray-600'}`;
+                    inp.classList.toggle('bg-green-50/70', locked);
+                    inp.classList.toggle('text-[#2e7d32]', locked);
+                    inp.classList.toggle('font-semibold', locked);
+                }
+            });
+
+            // Candados 4 celdas de cuota mensual
+            ['1_5', '1_10', '2_5', '2_10'].forEach(k => {
+                const locked = prop.lockedQuotaTarget === k;
+                const btn = document.getElementById(`btnLockQuota${k}`);
+                const inp = document.getElementById(`inpQuota${k}`);
+                if (btn && inp) {
+                    btn.innerHTML = locked ? SVG_LOCK_CLOSED : SVG_LOCK_OPEN;
+                    btn.className = `lock-btn ml-0.5 ${locked ? 'text-[#2e7d32] bg-green-50 border border-green-200' : 'text-gray-300 hover:text-gray-600'}`;
+                    inp.classList.toggle('bg-green-50/70', locked);
+                    inp.classList.toggle('text-[#2e7d32]', locked);
+                }
+            });
+        }
+
+        function recalculateAll(skipQuotaInputs = false, editedQuotaTarget = null) {
+            const prop = getCurrentProperty();
+            const price = Number(prop.price) || 0;
+            const agencyFee = Number(prop.agencyFee) || 0;
+            const brokerFee = Number(prop.brokerFee) || 0;
+            const renovation = Number(prop.renovation) || 0;
+            const otherExpenses = Number(prop.otherExpenses) || 0;
+            const availableCash = Number(prop.availableCash) || 0;
+
+            const pricePlusRenovation = price + agencyFee + brokerFee + renovation;
+            const itp5 = Math.round(price * 0.05);
+            const itp10 = Math.round(price * 0.10);
+
+            const total5 = pricePlusRenovation + itp5 + otherExpenses;
+            const total10 = pricePlusRenovation + itp10 + otherExpenses;
+
+            const missing5 = Math.max(0, total5 - availableCash);
+            const missing10 = Math.max(0, total10 - availableCash);
+
+            document.getElementById('valPricePlusRenovation').textContent = formatNumberES(pricePlusRenovation) + ' €';
+            document.getElementById('valItp5').textContent = formatNumberES(itp5) + ' €';
+            document.getElementById('valItp10').textContent = formatNumberES(itp10) + ' €';
+            document.getElementById('valOtherExpensesRight').textContent = '~' + formatNumberES(otherExpenses) + ' €';
+            document.getElementById('valTotal5').textContent = '~' + formatNumberES(total5) + ' €';
+            document.getElementById('valTotal10').textContent = '~' + formatNumberES(total10) + ' €';
+            document.getElementById('valMissing5').textContent = '~' + formatNumberES(missing5) + ' €';
+            document.getElementById('valMissing10').textContent = '~' + formatNumberES(missing10) + ' €';
+
+            // Actualizar años y etiquetas de meses
+            document.getElementById('inpYears1').value = prop.years1 || 20;
+            const lblM1 = document.getElementById('lblMonths1');
+            if (prop.months1 > 0) {
+                document.getElementById('valMonths1').textContent = prop.months1;
+                lblM1.classList.remove('hidden');
+            } else {
+                lblM1.classList.add('hidden');
+            }
+
+            document.getElementById('inpYears2').value = prop.years2 || 22;
+            const lblM2 = document.getElementById('lblMonths2');
+            if (prop.months2 > 0) {
+                document.getElementById('valMonths2').textContent = prop.months2;
+                lblM2.classList.remove('hidden');
+            } else {
+                lblM2.classList.add('hidden');
+            }
+
+            const q1_5 = prop.lockedQuotaTarget === '1_5' ? prop.lockedQuotaValue : calcMonthlyMortgage(missing5, prop.years1, prop.months1);
+            const q1_10 = prop.lockedQuotaTarget === '1_10' ? prop.lockedQuotaValue : calcMonthlyMortgage(missing10, prop.years1, prop.months1);
+            const q2_5 = prop.lockedQuotaTarget === '2_5' ? prop.lockedQuotaValue : calcMonthlyMortgage(missing5, prop.years2, prop.months2);
+            const q2_10 = prop.lockedQuotaTarget === '2_10' ? prop.lockedQuotaValue : calcMonthlyMortgage(missing10, prop.years2, prop.months2);
+
+            if (!skipQuotaInputs || editedQuotaTarget !== '1_5') {
+                document.getElementById('inpQuota1_5').value = formatNumberES(q1_5);
+            }
+            if (!skipQuotaInputs || editedQuotaTarget !== '1_10') {
+                document.getElementById('inpQuota1_10').value = formatNumberES(q1_10);
+            }
+            if (!skipQuotaInputs || editedQuotaTarget !== '2_5') {
+                document.getElementById('inpQuota2_5').value = formatNumberES(q2_5);
+            }
+            if (!skipQuotaInputs || editedQuotaTarget !== '2_10') {
+                document.getElementById('inpQuota2_10').value = formatNumberES(q2_10);
+            }
+        }
+
+        function handleYearsInput(rowNum, el) {
+            const prop = getCurrentProperty();
+            const yrs = Math.max(1, Math.min(40, parseNumberES(el.value) || 1));
+            if (rowNum === 1) {
+                prop.years1 = yrs;
+                prop.months1 = 0;
+            } else {
+                prop.years2 = yrs;
+                prop.months2 = 0;
+            }
+
+            // Si la cuota de esta fila está bloqueada, recalcular automáticamente la oferta del piso
+            if (prop.lockedQuotaTarget && prop.lockedQuotaTarget.startsWith(`${rowNum}_`)) {
+                const itpType = Number(prop.lockedQuotaTarget.split('_')[1]);
+                solveOfferPriceFromQuotaAndYears(rowNum, itpType, prop.lockedQuotaValue);
+            }
+
+            recalculateAll(false);
+            saveState(true);
+        }
+
+        function handleQuotaInput(rowNum, itpType, el) {
+            const prop = getCurrentProperty();
+            const targetQuota = parseNumberES(el.value);
+            if (targetQuota <= 0) return;
+
+            const key = `${rowNum}_${itpType}`;
+            if (prop.lockedQuotaTarget === key) {
+                prop.lockedQuotaValue = targetQuota;
+            }
+
+            const isRowYearsLocked = rowNum === 1 ? prop.lockYears1 : prop.lockYears2;
+            if (isRowYearsLocked) {
+                // Con años bloqueados y cuota introducida, calcular la oferta del piso
+                solveOfferPriceFromQuotaAndYears(rowNum, itpType, targetQuota);
+                recalculateAll(true, key);
+                saveState(true);
+                return;
+            }
+
+            const price = Number(prop.price) || 0;
+            const agencyFee = Number(prop.agencyFee) || 0;
+            const brokerFee = Number(prop.brokerFee) || 0;
+            const renovation = Number(prop.renovation) || 0;
+            const otherExpenses = Number(prop.otherExpenses) || 0;
+            const availableCash = Number(prop.availableCash) || 0;
+            const itp = Math.round(price * (itpType === 5 ? 0.05 : 0.10));
+            const principal = Math.max(0, price + agencyFee + brokerFee + renovation + itp + otherExpenses - availableCash);
+
+            if (principal <= 0) return;
+
+            const totalMonths = calcMonthsFromQuota(principal, targetQuota);
+            const yrs = Math.floor(totalMonths / 12);
+            const mos = totalMonths % 12;
+
+            if (rowNum === 1) {
+                prop.years1 = yrs;
+                prop.months1 = mos;
+            } else {
+                prop.years2 = yrs;
+                prop.months2 = mos;
+            }
+
+            recalculateAll(true, key);
+            saveState(true);
+        }
+
+        function getFilteredIndices() {
+            if (!appState.onlyFavorites) {
+                return appState.properties.map((_, i) => i);
+            }
+            const favs = appState.properties
+                .map((p, i) => (p.favorite ? i : -1))
+                .filter(i => i !== -1);
+            return favs.length ? favs : appState.properties.map((_, i) => i);
+        }
+
+        function renderCurrentCard() {
+            const prop = getCurrentProperty();
+
+            document.getElementById('inpAgencyName').value = prop.agencyName || '';
+            document.getElementById('inpAgencyPhone').value = prop.agencyPhone || '';
+            document.getElementById('inpAgencyEmail').value = prop.agencyEmail || '';
+
+            const callLink = document.getElementById('linkCallPhone');
+            const cleanPhone = String(prop.agencyPhone || '').replace(/\s+/g, '');
+            if (cleanPhone.length >= 6) {
+                callLink.href = 'tel:' + cleanPhone;
+                callLink.classList.remove('hidden');
+            } else {
+                callLink.classList.add('hidden');
+            }
+
+            const dot = document.getElementById('dotHasLink');
+            const visitBtn = document.getElementById('btnVisitUrl');
+            const inpHiddenUrl = document.getElementById('inpHiddenUrl');
+            inpHiddenUrl.value = prop.listingUrl || '';
+            if (prop.listingUrl && prop.listingUrl.trim()) {
+                dot.classList.remove('hidden');
+                visitBtn.href = prop.listingUrl.startsWith('http') ? prop.listingUrl : 'https://' + prop.listingUrl;
+            } else {
+                dot.classList.add('hidden');
+                visitBtn.href = '#';
+            }
+
+            const heartIcon = document.getElementById('iconHeart');
+            const btnFav = document.getElementById('btnFavorite');
+            if (prop.favorite) {
+                heartIcon.setAttribute('fill', '#e11d48');
+                heartIcon.setAttribute('stroke', '#e11d48');
+                btnFav.classList.add('text-rose-600');
+            } else {
+                heartIcon.setAttribute('fill', 'none');
+                heartIcon.setAttribute('stroke', 'currentColor');
+                btnFav.classList.remove('text-rose-600');
+            }
+
+            document.getElementById('inpTitle').value = prop.title || '';
+            document.getElementById('inpSubtitle').value = prop.subtitle || '';
+            document.getElementById('inpRooms').value = prop.rooms || '';
+            document.getElementById('inpFloor').value = prop.floor || '';
+            document.getElementById('inpElevator').value = prop.elevator || '';
+            document.getElementById('inpSqm').value = prop.sqm || '';
+            document.getElementById('inpExtraNote').value = prop.extraNote || '';
+
+            document.getElementById('inpPrice').value = formatNumberES(prop.price);
+            document.getElementById('inpAgencyLabel').value = prop.agencyLabel || 'incluida';
+            document.getElementById('inpAgencyFee').value = formatNumberES(prop.agencyFee);
+            document.getElementById('inpBrokerLabel').value = prop.brokerLabel || 'sin obligación';
+            document.getElementById('inpBrokerFee').value = formatNumberES(prop.brokerFee);
+            document.getElementById('inpRenovation').value = formatNumberES(prop.renovation);
+            document.getElementById('inpOtherExpenses').value = formatNumberES(prop.otherExpenses);
+            document.getElementById('inpAvailableCash').value = formatNumberES(prop.availableCash);
+
+            document.getElementById('txtUpdatedDate').textContent = prop.updatedAt || getFormattedToday();
+
+            recalculateAll(false);
+            updateLocksUI();
+            updateNavigationUI();
+        }
+
+        function updateNavigationUI() {
+            const indices = getFilteredIndices();
+            const pos = indices.indexOf(appState.currentIndex);
+            const displayPos = pos >= 0 ? pos + 1 : 1;
+            const total = indices.length;
+
+            document.getElementById('counterBadge').textContent = `${displayPos}/${total}`;
+            document.getElementById('btnPrev').disabled = displayPos <= 1;
+            document.getElementById('btnNext').disabled = displayPos >= total;
+
+            const iconFavFilter = document.getElementById('iconFavFilter');
+            if (appState.onlyFavorites) {
+                iconFavFilter.setAttribute('fill', '#e11d48');
+                iconFavFilter.setAttribute('stroke', '#e11d48');
+            } else {
+                iconFavFilter.setAttribute('fill', 'none');
+                iconFavFilter.setAttribute('stroke', 'currentColor');
+            }
+
+            const dotsContainer = document.getElementById('dotsIndicator');
+            dotsContainer.innerHTML = '';
+            if (total > 1) {
+                indices.forEach((realIdx) => {
+                    const dot = document.createElement('button');
+                    const isActive = realIdx === appState.currentIndex;
+                    dot.className = `h-1.5 rounded-full transition-all ${isActive ? 'w-5 bg-rose-500' : 'w-1.5 bg-gray-300'}`;
+                    dot.onclick = () => {
+                        appState.currentIndex = realIdx;
+                        renderCurrentCard();
+                        saveState(false);
+                    };
+                    dotsContainer.appendChild(dot);
+                });
+            }
+        }
+
+        function navigateCard(delta) {
+            const indices = getFilteredIndices();
+            const pos = indices.indexOf(appState.currentIndex);
+            const nextPos = pos + delta;
+            if (nextPos >= 0 && nextPos < indices.length) {
+                appState.currentIndex = indices[nextPos];
+                renderCurrentCard();
+                saveState(false);
+            }
+        }
+
+        function addNewProperty() {
+            appState.onlyFavorites = false;
+            const newProp = createBlankProperty(false);
+            appState.properties.push(newProp);
+            appState.currentIndex = appState.properties.length - 1;
+            renderCurrentCard();
+            saveState(true);
+            showToast('Nueva ficha añadida');
+        }
+
+        function toggleFavorite() {
+            const prop = getCurrentProperty();
+            prop.favorite = !prop.favorite;
+            renderCurrentCard();
+            saveState(false);
+            showToast(prop.favorite ? 'Añadido a favoritos' : 'Quitado de favoritos');
+        }
+
+        function toggleFavFilter() {
+            const hasFavs = appState.properties.some(p => p.favorite);
+            if (!appState.onlyFavorites && !hasFavs) {
+                showToast('Aún no tienes pisos marcados como favoritos');
+                return;
+            }
+            appState.onlyFavorites = !appState.onlyFavorites;
+            const indices = getFilteredIndices();
+            if (!indices.includes(appState.currentIndex)) {
+                appState.currentIndex = indices[0];
+            }
+            renderCurrentCard();
+        }
+
+        function toggleIndexModal() {
+            const modal = document.getElementById('indexModal');
+            const isHidden = modal.classList.contains('hidden');
+            if (isHidden) {
+                const listEl = document.getElementById('indexList');
+                listEl.innerHTML = '';
+                appState.properties.forEach((p, idx) => {
+                    const row = document.createElement('button');
+                    const isCurrent = idx === appState.currentIndex;
+                    row.className = `w-full py-2.5 px-2 text-left flex items-center justify-between hover:bg-gray-50 rounded-lg transition ${isCurrent ? 'bg-green-50/60 font-semibold' : ''}`;
+                    const titleText = (p.title && p.title.trim()) ? p.title : `Piso #${idx + 1} (sin título)`;
+                    const priceText = p.price > 0 ? `${formatNumberES(p.price)} €` : '0 €';
+                    row.innerHTML = `
+                        <div class="truncate pr-3">
+                            <div class="text-sm text-gray-900 truncate">${p.favorite ? '❤️ ' : ''}${titleText}</div>
+                            <div class="text-xs text-gray-500">${priceText}</div>
+                        </div>
+                        <span class="text-xs text-gray-400">#${idx + 1}</span>
+                    `;
+                    row.onclick = () => {
+                        appState.onlyFavorites = false;
+                        appState.currentIndex = idx;
+                        toggleIndexModal();
+                        renderCurrentCard();
+                        saveState(false);
+                    };
+                    listEl.appendChild(row);
+                });
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function confirmDeleteCurrent() {
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        function executeDeleteCurrent() {
+            closeDeleteModal();
+            if (appState.properties.length <= 1) {
+                appState.properties = [createBlankProperty(true)];
+                appState.currentIndex = 0;
+            } else {
+                appState.properties.splice(appState.currentIndex, 1);
+                if (appState.currentIndex >= appState.properties.length) {
+                    appState.currentIndex = appState.properties.length - 1;
+                }
+            }
+            renderCurrentCard();
+            saveState(false);
+            showToast('Ficha eliminada');
+        }
+
+        function resetToBlankSheet() {
+            appState.defaultAvailableCash = 0;
+            appState.onlyFavorites = false;
+            appState.properties = [createBlankProperty(true)];
+            appState.currentIndex = 0;
+            try {
+                localStorage.removeItem(STORAGE_KEY);
+            } catch (e) {}
+            renderCurrentCard();
+            saveState(true);
+            showToast('Hoja reiniciada en blanco');
+        }
+
+        function exportHtmlWithData() {
+            toggleUrlBar(false);
+            document.getElementById('indexModal').classList.add('hidden');
+            document.getElementById('deleteModal').classList.add('hidden');
+            document.getElementById('shareModal').classList.add('hidden');
+
+            const embeddedEl = document.getElementById('embedded-data');
+            const payload = {
+                defaultAvailableCash: appState.defaultAvailableCash,
+                properties: appState.properties
+            };
+            embeddedEl.textContent = '\n' + JSON.stringify(payload, null, 2) + '\n';
+
+            const docHtml = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+            const blob = new Blob([docHtml], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'mis-pisos-guardados.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showToast('Archivo con tus pisos descargado');
+        }
+
+        function handleListingLinkClick() {
+            const bar = document.getElementById('urlEditorBar');
+            toggleUrlBar(bar.classList.contains('hidden'));
+        }
+
+        function toggleUrlBar(forceOpen) {
+            const bar = document.getElementById('urlEditorBar');
+            if (forceOpen) {
+                bar.classList.remove('hidden');
+            } else {
+                bar.classList.add('hidden');
+            }
+        }
+
+        // Extractor local instantáneo desde el texto copiado del portal inmobiliario o enlace
+        function autoFillFromUrl() {
+            const urlVal = (document.getElementById('inpHiddenUrl').value || '').trim();
+            const pastedText = (document.getElementById('inpPasteAdText').value || '').trim();
+            const combined = [urlVal, pastedText].filter(Boolean).join('\n');
+
+            if (!combined) {
+                showToast('Pega primero el enlace o el texto del anuncio');
+                return;
+            }
+
+            const prop = getCurrentProperty();
+            if (urlVal) {
+                prop.listingUrl = urlVal;
+            }
+
+            // 1. Precio en euros (ej. 185.000 €, 185000€, 185.000 euros)
+            const priceMatch = combined.match(/(\d{2,3}(?:[.\s]\d{3})+|\d{5,7})\s*(?:€|euros?)/i);
+            if (priceMatch) {
+                const parsedPrice = parseInt(priceMatch[1].replace(/[^\d]/g, ''), 10);
+                if (parsedPrice >= 15000 && parsedPrice <= 9000000) {
+                    prop.price = parsedPrice;
+                    if (!prop.otherExpensesManual) {
+                        prop.otherExpenses = calculateDefaultOtherExpenses(parsedPrice);
+                    }
+                }
+            }
+
+            // 2. Habitaciones (cifras o palabras en español)
+            const wordToNum = { 'una': '1', 'un': '1', 'dos': '2', 'tres': '3', 'cuatro': '4', 'cinco': '5', 'seis': '6' };
+            const roomsNumMatch = combined.match(/(\d+)\s*(?:hab(?:itaciones|\.)?|dormitorios?)/i);
+            const roomsWordMatch = combined.match(/\b(una?|dos|tres|cuatro|cinco|seis)\s*(?:hab(?:itaciones|\.)?|dormitorios?)/i);
+            if (roomsNumMatch) {
+                prop.rooms = roomsNumMatch[1] + ' hab';
+            } else if (roomsWordMatch) {
+                const n = wordToNum[roomsWordMatch[1].toLowerCase()];
+                if (n) prop.rooms = n + ' hab';
+            }
+
+            // 3. Metros cuadrados (ej. 95 m², 95m2, 95 metros)
+            const sqmMatch = combined.match(/(\d{2,4})\s*(?:m²|m2|metros\s*cuadrados?)/i);
+            if (sqmMatch) {
+                prop.sqm = sqmMatch[1] + ' m²';
+            }
+
+            // 4. Altura / Planta (ej. Planta 2ª, 2º, Bajo, Ático, Entresuelo)
+            const floorMatch = combined.match(/(?:planta\s*(\d+)[ªºa]?|(\d+)[ªº]\s*(?:planta|piso|exterior|interior)|\b(bajo|ático|atico|entresuelo|principal)\b)/i);
+            if (floorMatch) {
+                if (floorMatch[1]) prop.floor = floorMatch[1] + 'º';
+                else if (floorMatch[2]) prop.floor = floorMatch[2] + 'º';
+                else if (floorMatch[3]) prop.floor = floorMatch[3].charAt(0).toUpperCase() + floorMatch[3].slice(1).toLowerCase();
+            }
+
+            // 5. Ascensor (con ascensor / sin ascensor)
+            if (/sin\s+ascensor/i.test(combined)) {
+                prop.elevator = 'No';
+            } else if (/(?:con\s+ascensor|ascensor)/i.test(combined)) {
+                prop.elevator = 'Sí';
+            }
+
+            // 6. Extra destacado (Exterior, Terraza, Balcón, Garaje, Piscina, Reformado)
+            const extras = [];
+            if (/\bexterior\b/i.test(combined)) extras.push('Exterior');
+            if (/\bterraza\b/i.test(combined)) extras.push('Terraza');
+            if (/\bbalc[oó]n\b/i.test(combined)) extras.push('Balcón');
+            if (/\b(?:garaje|parking|plaza de garaje)\b/i.test(combined)) extras.push('Garaje');
+            if (/\bpiscina\b/i.test(combined)) extras.push('Piscina');
+            if (/\breformado\b/i.test(combined)) extras.push('Reformado');
+            if (extras.length > 0) {
+                prop.extraNote = extras.slice(0, 2).join(', ');
+            }
+
+            // 7. Título del piso (primera línea significativa del texto pegado que no sea URL)
+            if (pastedText) {
+                const lines = pastedText.split('\n').map(l => l.trim()).filter(l => l.length > 4 && !l.startsWith('http'));
+                const titleCandidate = lines.find(l => /(?:piso|ático|atico|casa|chalet|dúplex|duplex|estudio|calle|av\.|avenida|plaza)/i.test(l)) || lines[0];
+                if (titleCandidate) {
+                    prop.title = titleCandidate.slice(0, 65);
+                }
+            }
+
+            // 8. Teléfono e inmobiliaria si aparecen en el texto
+            const phoneMatch = combined.match(/(?:\+34\s*)?([6789]\d{2}[\s.-]?\d{3}[\s.-]?\d{3})/);
+            if (phoneMatch && !prop.agencyPhone) {
+                prop.agencyPhone = phoneMatch[1].replace(/[^\d]/g, '');
+            }
+            const agencyMatch = combined.match(/(?:inmobiliaria|finques|fincas|agencia)\s+([A-ZÁÉÍÓÚÑ][a-zA-ZÁÉÍÓÚÑáéíóúñ0-9\s&.-]{2,28})/);
+            if (agencyMatch && !prop.agencyName) {
+                prop.agencyName = agencyMatch[0].trim().slice(0, 32);
+            }
+
+            document.getElementById('inpPasteAdText').value = '';
+            toggleUrlBar(false);
+            renderCurrentCard();
+            saveState(true);
+            showToast('Datos extraídos y rellenados en la ficha');
+        }
+
+        // Captura de pantalla limpia de la ficha actual en PNG
+        let lastCapturedBlob = null;
+        let lastCapturedDataUrl = '';
+
+        async function captureAndShareCard() {
+            toggleUrlBar(false);
+            const originalCard = document.getElementById('propertyCard');
+            showToast('Generando imagen de la ficha...');
+
+            // Clonar fuera de pantalla con ancho estándar limpio
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'fixed';
+            wrapper.style.left = '-9999px';
+            wrapper.style.top = '0';
+            wrapper.style.width = '480px';
+            wrapper.style.backgroundColor = '#ffffff';
+            wrapper.style.zIndex = '-1';
+
+            const clone = originalCard.cloneNode(true);
+            clone.style.width = '480px';
+            clone.style.maxWidth = '480px';
+            clone.style.boxShadow = 'none';
+            clone.style.borderRadius = '0';
+            clone.style.padding = '28px 30px';
+
+            // Emparejar todos los inputs por ID antes de eliminar barras de edición
+            const origInputs = originalCard.querySelectorAll('input[id]');
+            origInputs.forEach(origInp => {
+                const cloneInp = clone.querySelector('#' + origInp.id);
+                if (!cloneInp) return;
+
+                const span = document.createElement('span');
+                const val = (origInp.value || '').trim();
+                span.textContent = val;
+                span.className = cloneInp.className
+                    .replace('bg-green-50/40', '')
+                    .replace('bg-green-50/60', '')
+                    .replace('bg-green-50/70', '')
+                    .replace('text-[#2e7d32]', 'text-[#111111]');
+                span.style.border = 'none';
+                span.style.background = 'transparent';
+                span.style.display = 'inline-block';
+                span.style.overflow = 'visible';
+                span.style.lineHeight = '1.45';
+                span.style.paddingBottom = '2px';
+                if (origInp.id === 'inpTitle' || origInp.id === 'inpSubtitle') {
+                    span.style.display = 'block';
+                    span.style.width = '100%';
+                    if (!val) span.style.display = 'none';
+                }
+                cloneInp.parentNode.replaceChild(span, cloneInp);
+            });
+
+            // Ocultar puntos separadores huérfanos en cabecera si faltan datos de agencia
+            const prop = getCurrentProperty();
+            const sep1 = clone.querySelector('#sepAgency1');
+            const sep2 = clone.querySelector('#sepAgency2');
+            if (sep1 && (!prop.agencyName || !prop.agencyPhone)) sep1.style.display = 'none';
+            if (sep2 && (!prop.agencyPhone || !prop.agencyEmail)) sep2.style.display = 'none';
+
+            // Eliminar iconos de edición, candados, barra URL y botón de extracción del clon
+            ['#cardActionIcons', '#urlEditorBar', '#btnQuickExtractLink'].forEach(sel => {
+                const el = clone.querySelector(sel);
+                if (el) el.remove();
+            });
+            clone.querySelectorAll('.lock-btn').forEach(btn => btn.remove());
+
+            wrapper.appendChild(clone);
+            document.body.appendChild(wrapper);
+
+            try {
+                const canvas = await html2canvas(clone, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    useCORS: true,
+                    logging: false
+                });
+                lastCapturedDataUrl = canvas.toDataURL('image/png');
+                canvas.toBlob(blob => {
+                    lastCapturedBlob = blob;
+                }, 'image/png');
+
+                document.getElementById('capturedPreviewImg').src = lastCapturedDataUrl;
+                document.getElementById('shareModal').classList.remove('hidden');
+            } catch (err) {
+                console.error('Error al generar captura:', err);
+                showToast('No se pudo generar la imagen');
+            } finally {
+                document.body.removeChild(wrapper);
+            }
+        }
+
+        async function shareCapturedImage() {
+            if (!lastCapturedBlob) {
+                downloadCapturedImage();
+                return;
+            }
+            const prop = getCurrentProperty();
+            const safeName = (prop.title || 'ficha-piso').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'ficha-piso';
+            const file = new File([lastCapturedBlob], `${safeName}.png`, { type: 'image/png' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: prop.title || 'Ficha de piso'
+                    });
+                    closeShareModal();
+                    return;
+                } catch (e) {
+                    if (e.name === 'AbortError') return;
+                }
+            }
+            downloadCapturedImage();
+        }
+
+        function downloadCapturedImage() {
+            if (!lastCapturedDataUrl) return;
+            const prop = getCurrentProperty();
+            const safeName = (prop.title || 'ficha-piso').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'ficha-piso';
+            const a = document.createElement('a');
+            a.href = lastCapturedDataUrl;
+            a.download = `${safeName}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast('Imagen guardada');
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.add('hidden');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.remove('opacity-0');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 2200);
+        }
+
+        // Gestos táctiles para deslizar entre fichas en móvil
+        let touchStartX = 0;
+        let touchStartY = 0;
+        const cardEl = document.getElementById('propertyCard');
+        cardEl.addEventListener('touchstart', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        cardEl.addEventListener('touchend', (e) => {
+            if (!touchStartX) return;
+            const dx = e.changedTouches[0].screenX - touchStartX;
+            const dy = e.changedTouches[0].screenY - touchStartY;
+            touchStartX = 0;
+            if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+                navigateCard(dx < 0 ? 1 : -1);
+            }
+        }, { passive: true });
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
