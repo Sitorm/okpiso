@@ -29,21 +29,34 @@ jobs:
           mkdir -p www
           cp index.html www/index.html
 
-      - name: 5. Crear proyecto Android
+      - name: 5. Crear proyecto Android con Plugins
         run: |
           npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/filesystem @capacitor/share
           npx cap init "OkPiso" "com.sitorm.okpiso" --web-dir www
           npx cap add android
+          npx cap sync android
           echo 'configurations.all { resolutionStrategy { force "org.jetbrains.kotlin:kotlin-stdlib:1.8.22", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22" } }' >> android/app/build.gradle
 
-      - name: 6. Compilar APK limpia
+      - name: 6. Poner icono OkPiso sin conflictos
+        run: |
+          if [ -f "okpiso-icon.png" ]; then
+            for dir in android/app/src/main/res/mipmap-mdpi android/app/src/main/res/mipmap-hdpi android/app/src/main/res/mipmap-xhdpi android/app/src/main/res/mipmap-xxhdpi android/app/src/main/res/mipmap-xxxhdpi; do
+              if [ -d "$dir" ]; then
+                cp okpiso-icon.png "$dir/ic_launcher.png"
+                cp okpiso-icon.png "$dir/ic_launcher_round.png"
+                cp okpiso-icon.png "$dir/ic_launcher_foreground.png"
+              fi
+            done
+          fi
+
+      - name: 7. Compilar APK limpia
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: 7. Guardar OkPiso.apk
+      - name: 8. Guardar OkPiso.apk
         uses: actions/upload-artifact@v4
         with:
           name: OkPiso-APK-Limpia
