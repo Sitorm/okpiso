@@ -36,24 +36,13 @@ jobs:
           npx cap init "OkPiso" "com.sitorm.okpiso" --web-dir www
           npx cap add android
 
-      - name: 6. Poner icono OkPiso
-        run: |
-          if [ -f "okpiso-icon.png" ]; then
-            rm -rf android/app/src/main/res/mipmap-anydpi-v26
-            for dir in android/app/src/main/res/mipmap-*; do
-              cp okpiso-icon.png "$dir/ic_launcher.png"
-              cp okpiso-icon.png "$dir/ic_launcher_round.png"
-              cp okpiso-icon.png "$dir/ic_launcher_foreground.png"
-            done
-          fi
-
-      - name: 7. Compilar APK limpia
+      - name: 6. Compilar APK limpia
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: 8. Guardar OkPiso.apk
+      - name: 7. Guardar OkPiso.apk
         uses: actions/upload-artifact@v4
         with:
           name: OkPiso-APK-Limpia
