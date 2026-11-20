@@ -98,7 +98,7 @@
     </div>
 
     <!-- TARJETA PRINCIPAL -->
-    <main id="propertyCard" class="card-transition w-full max-w-[540px] bg-white rounded-sm shadow-sm px-4 py-5 sm:px-9 sm:py-8 relative">
+    <main id="propertyCard" class="card-transition w-full max-w-[540px] bg-white rounded-sm shadow-sm px-3.5 py-5 sm:px-9 sm:py-8 relative">
 
         <!-- Cabecera Inmobiliaria -->
         <div class="flex flex-wrap items-center justify-between gap-y-1.5 pb-3.5 mb-3.5 border-b border-gray-100 text-[12px] text-gray-500">
@@ -276,19 +276,19 @@
 
         <!-- TABLA 2: COMPARATIVA ITP -->
         <div class="mt-4 text-[11px] sm:text-[15px]">
-            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center pb-2 font-bold gap-1">
+            <div class="grid grid-cols-[1fr_92px_92px] sm:grid-cols-[1fr_124px_124px] items-center pb-2 font-bold gap-1">
                 <div></div>
                 <div class="text-right text-[#2e7d32] whitespace-nowrap">ITP 5% (*)</div>
                 <div class="text-right text-[#111111] whitespace-nowrap">ITP 10%</div>
             </div>
 
-            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+            <div class="grid grid-cols-[1fr_92px_92px] sm:grid-cols-[1fr_124px_124px] items-center py-2 gap-1">
                 <div class="text-[#111111]">ITP (impuesto)</div>
                 <div id="valItp5" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">0 €</div>
                 <div id="valItp10" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">0 €</div>
             </div>
 
-            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+            <div class="grid grid-cols-[1fr_92px_92px] sm:grid-cols-[1fr_124px_124px] items-center py-2 gap-1">
                 <div class="text-[#111111] leading-tight">Otros gastos (estim.)</div>
                 <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap tabular-nums">
                     <span>~</span>
@@ -300,14 +300,14 @@
                 <div id="valOtherExpensesRight" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">~3.200 €</div>
             </div>
 
-            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+            <div class="grid grid-cols-[1fr_92px_92px] sm:grid-cols-[1fr_124px_124px] items-center py-2 gap-1">
                 <div class="text-[#111111] leading-tight">Total operación</div>
                 <div id="valTotal5" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">~0 €</div>
                 <div id="valTotal10" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">~0 €</div>
             </div>
 
-            <!-- FILA FALTA SOBRE (CAJA RECREADA PARA DESTACAR SIN NEGRITA) -->
-            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+            <!-- FILA FALTA SOBRE -->
+            <div class="grid grid-cols-[1fr_92px_92px] sm:grid-cols-[1fr_124px_124px] items-center py-2 gap-1">
                 <div class="flex items-center flex-wrap text-[#111111] leading-tight">
                     <span>Falta sobre</span>
                     <div class="flex items-center ml-1 bg-[#fff8e1] border border-[#ffe082] rounded px-1 py-0.5 shadow-sm">
@@ -321,12 +321,9 @@
                 <div id="valMissing10" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">~0 €</div>
             </div>
 
-            <!-- CUOTAS CON CANDADO -->
-            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+            <!-- CUOTA 1 CON CANDADO JUSTO AL LADO DEL PRECIO AL MES -->
+            <div class="grid grid-cols-[1fr_92px_92px] sm:grid-cols-[1fr_124px_124px] items-center py-2 gap-1">
                 <div class="flex items-center flex-wrap text-[#111111] text-[10.5px] sm:text-[14px] leading-tight">
-                    <button onclick="toggleQuotaLock(1)" title="Bloquear esta cuota" class="mr-0.5 p-0.5 rounded text-gray-500 hover:bg-gray-100 transition-colors" style="font-size:12px;">
-                        <span id="iconLock1">🔓</span>
-                    </button>
                     <span>Cuota</span>
                     <input type="text" id="inpYears1" inputmode="numeric"
                         oninput="handleYearsInput(1, this)"
@@ -334,27 +331,31 @@
                     <span id="lblMonths1" class="hidden text-[10px] sm:text-[12px] mr-0.5">y<span id="valMonths1">0</span>m</span>
                     <span>(3%)</span>
                 </div>
-                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums">
+                <div id="boxQuota1_5" class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums rounded px-0.5">
                     <span>~</span>
                     <input type="text" id="inpQuota1_5" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(1, 5, this)"
-                        class="editable-field text-right font-bold w-9 sm:w-12 text-[#111111]">
+                        class="editable-field text-right font-bold w-8 sm:w-12 text-[#111111]">
                     <span>€/m</span>
+                    <button onclick="toggleQuotaLock(1, 5)" title="Bloquear cuota ITP 5%" class="no-capture ml-0.5 p-0.5 rounded hover:bg-gray-100 leading-none">
+                        <span id="iconLock1_5" class="text-[11px] sm:text-[13px]">🔓</span>
+                    </button>
                 </div>
-                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums">
+                <div id="boxQuota1_10" class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums rounded px-0.5">
                     <span>~</span>
                     <input type="text" id="inpQuota1_10" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(1, 10, this)"
-                        class="editable-field text-right font-bold w-9 sm:w-12 text-[#111111]">
+                        class="editable-field text-right font-bold w-8 sm:w-12 text-[#111111]">
                     <span>€/m</span>
+                    <button onclick="toggleQuotaLock(1, 10)" title="Bloquear cuota ITP 10%" class="no-capture ml-0.5 p-0.5 rounded hover:bg-gray-100 leading-none">
+                        <span id="iconLock1_10" class="text-[11px] sm:text-[13px]">🔓</span>
+                    </button>
                 </div>
             </div>
 
-            <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
+            <!-- CUOTA 2 CON CANDADO JUSTO AL LADO DEL PRECIO AL MES -->
+            <div class="grid grid-cols-[1fr_92px_92px] sm:grid-cols-[1fr_124px_124px] items-center py-2 gap-1">
                 <div class="flex items-center flex-wrap text-[#111111] text-[10.5px] sm:text-[14px] leading-tight">
-                    <button onclick="toggleQuotaLock(2)" title="Bloquear esta cuota" class="mr-0.5 p-0.5 rounded text-gray-500 hover:bg-gray-100 transition-colors" style="font-size:12px;">
-                        <span id="iconLock2">🔓</span>
-                    </button>
                     <span>Cuota</span>
                     <input type="text" id="inpYears2" inputmode="numeric"
                         oninput="handleYearsInput(2, this)"
@@ -362,19 +363,25 @@
                     <span id="lblMonths2" class="hidden text-[10px] sm:text-[12px] mr-0.5">y<span id="valMonths2">0</span>m</span>
                     <span>(3%)</span>
                 </div>
-                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums">
+                <div id="boxQuota2_5" class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums rounded px-0.5">
                     <span>~</span>
                     <input type="text" id="inpQuota2_5" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(2, 5, this)"
-                        class="editable-field text-right font-bold w-9 sm:w-12 text-[#111111]">
+                        class="editable-field text-right font-bold w-8 sm:w-12 text-[#111111]">
                     <span>€/m</span>
+                    <button onclick="toggleQuotaLock(2, 5)" title="Bloquear cuota ITP 5%" class="no-capture ml-0.5 p-0.5 rounded hover:bg-gray-100 leading-none">
+                        <span id="iconLock2_5" class="text-[11px] sm:text-[13px]">🔓</span>
+                    </button>
                 </div>
-                <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums">
+                <div id="boxQuota2_10" class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums rounded px-0.5">
                     <span>~</span>
                     <input type="text" id="inpQuota2_10" inputmode="numeric"
                         onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleQuotaInput(2, 10, this)"
-                        class="editable-field text-right font-bold w-9 sm:w-12 text-[#111111]">
+                        class="editable-field text-right font-bold w-8 sm:w-12 text-[#111111]">
                     <span>€/m</span>
+                    <button onclick="toggleQuotaLock(2, 10)" title="Bloquear cuota ITP 10%" class="no-capture ml-0.5 p-0.5 rounded hover:bg-gray-100 leading-none">
+                        <span id="iconLock2_10" class="text-[11px] sm:text-[13px]">🔓</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -432,7 +439,7 @@
                     Enviar por WhatsApp / Correo
                 </button>
                 <button onclick="downloadCapturedImage()" class="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-xl text-xs font-semibold transition">
-                    Guardar en Descargas / Documentos
+                    Guardar en Galería (álbum OkPiso)
                 </button>
             </div>
         </div>
@@ -442,13 +449,6 @@
     <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 z-50 text-center max-w-[90%]">
         Guardado
     </div>
-
-    <script id="embedded-data" type="application/json">
-    {
-        "defaultAvailableCash": 0,
-        "properties": []
-    }
-    </script>
 
     <script>
         const STORAGE_KEY = 'okpiso_fichas_v2';
@@ -484,7 +484,7 @@
                 renovation: 0, otherExpenses: 3200,
                 availableCash: isFirst ? 0 : (appState.defaultAvailableCash || 0),
                 years1: 20, months1: 0, years2: 22, months2: 0,
-                q1Locked: false, q1Target: 0, q2Locked: false, q2Target: 0,
+                q1LockCol: 0, q1Target: 0, q2LockCol: 0, q2Target: 0,
                 agencyName: '', agencyPhone: '', agencyEmail: '', listingUrl: '', favorite: false,
                 updatedAt: formatSpanishDate(new Date())
             };
@@ -554,18 +554,20 @@
             return { years: Math.floor(clampedMonths / 12), months: clampedMonths % 12 };
         }
 
-        function toggleQuotaLock(row) {
+        function toggleQuotaLock(row, col) {
             const prop = getCurrentProperty();
             if (!prop) return;
-            const lockKey = 'q' + row + 'Locked';
-            prop[lockKey] = !prop[lockKey];
+            const colKey = 'q' + row + 'LockCol';
+            const targetKey = 'q' + row + 'Target';
 
-            if (prop[lockKey]) {
-                const el = document.getElementById('inpQuota' + row + '_5');
-                prop['q' + row + 'Target'] = parseNumberES(el.value) || 0;
-                showToast('Cuota ' + row + ' bloqueada. Los años se ajustarán solos.');
+            if (prop[colKey] === col) {
+                prop[colKey] = 0;
+                showToast('Cuota desbloqueada');
             } else {
-                showToast('Cuota ' + row + ' desbloqueada.');
+                prop[colKey] = col;
+                const el = document.getElementById('inpQuota' + row + '_' + col);
+                prop[targetKey] = parseNumberES(el.value) || 0;
+                showToast('Cuota fijada en ' + formatNumberES(prop[targetKey]) + ' €/mes');
             }
             saveState(true);
             renderCurrentCard();
@@ -592,14 +594,14 @@
             const missing5 = Math.max(0, total5 - availableCash);
             const missing10 = Math.max(0, total10 - availableCash);
 
-            // Si el candado 1 está puesto, ajusta los años 1 automáticamente
-            if (prop.q1Locked && prop.q1Target > 0) {
-                const { years, months } = calculateMonthsFromQuota(missing5, 3, prop.q1Target);
+            if (prop.q1LockCol && prop.q1Target > 0) {
+                const baseMissing = prop.q1LockCol === 5 ? missing5 : missing10;
+                const { years, months } = calculateMonthsFromQuota(baseMissing, 3, prop.q1Target);
                 prop.years1 = years; prop.months1 = months;
             }
-            // Si el candado 2 está puesto, ajusta los años 2 automáticamente
-            if (prop.q2Locked && prop.q2Target > 0) {
-                const { years, months } = calculateMonthsFromQuota(missing5, 3, prop.q2Target);
+            if (prop.q2LockCol && prop.q2Target > 0) {
+                const baseMissing = prop.q2LockCol === 5 ? missing5 : missing10;
+                const { years, months } = calculateMonthsFromQuota(baseMissing, 3, prop.q2Target);
                 prop.years2 = years; prop.months2 = months;
             }
 
@@ -653,12 +655,23 @@
             if (prop.favorite) { iconHeart.classList.add('text-rose-500', 'fill-rose-500'); iconHeart.classList.remove('text-gray-300'); } 
             else { iconHeart.classList.remove('text-rose-500', 'fill-rose-500'); iconHeart.classList.add('text-gray-300'); }
 
-            document.getElementById('iconLock1').textContent = prop.q1Locked ? '🔒' : '🔓';
-            document.getElementById('iconLock2').textContent = prop.q2Locked ? '🔒' : '🔓';
-            document.getElementById('inpYears1').disabled = prop.q1Locked;
-            document.getElementById('inpYears2').disabled = prop.q2Locked;
-            document.getElementById('inpYears1').style.opacity = prop.q1Locked ? '0.5' : '1';
-            document.getElementById('inpYears2').style.opacity = prop.q2Locked ? '0.5' : '1';
+            // Actualizar estado visual de los candados en cada cuota
+            [1, 2].forEach(r => {
+                const lockedCol = prop['q' + r + 'LockCol'] || 0;
+                [5, 10].forEach(c => {
+                    const isLocked = lockedCol === c;
+                    document.getElementById('iconLock' + r + '_' + c).textContent = isLocked ? '🔒' : '🔓';
+                    const box = document.getElementById('boxQuota' + r + '_' + c);
+                    if (isLocked) {
+                        box.classList.add('bg-amber-50', 'ring-1', 'ring-amber-300');
+                    } else {
+                        box.classList.remove('bg-amber-50', 'ring-1', 'ring-amber-300');
+                    }
+                });
+                const inpY = document.getElementById('inpYears' + r);
+                inpY.disabled = lockedCol > 0;
+                inpY.style.opacity = lockedCol > 0 ? '0.55' : '1';
+            });
 
             document.getElementById('inpAgencyName').value = prop.agencyName || '';
             document.getElementById('inpAgencyPhone').value = prop.agencyPhone || '';
@@ -828,9 +841,8 @@
 
         function handleYearsInput(row, el) {
             const prop = getCurrentProperty(); if (!prop) return;
-            if (prop['q' + row + 'Locked']) {
-                prop['q' + row + 'Locked'] = false;
-                showToast('Candado abierto automáticamente');
+            if (prop['q' + row + 'LockCol']) {
+                prop['q' + row + 'LockCol'] = 0;
             }
             const yrs = Math.max(1, Math.min(50, Math.round(parseNumberES(el.value))));
             if (row === 1) { prop.years1 = yrs; prop.months1 = 0; } else { prop.years2 = yrs; prop.months2 = 0; }
@@ -842,7 +854,9 @@
             const targetQuota = parseNumberES(el.value);
             if (targetQuota <= 0) return;
 
-            if (prop['q' + row + 'Locked'] && itpType === 5) prop['q' + row + 'Target'] = targetQuota;
+            if (prop['q' + row + 'LockCol'] === itpType) {
+                prop['q' + row + 'Target'] = targetQuota;
+            }
 
             const price = Number(prop.price) || 0;
             const pricePlusRenovation = price + (Number(prop.agencyFee) || 0) + (Number(prop.brokerFee) || 0) + (Number(prop.renovation) || 0);
@@ -913,7 +927,7 @@
             saveState(false); renderCurrentCard(); showToast('Ficha eliminada');
         }
 
-        // CAPTURA Y COMPARTIR NATIVO
+        // CAPTURA Y COMPARTIR NATIVO DIRECTO (ANDROID PUENTE JAVA)
         let lastCapturedBlob = null;
         let lastCapturedDataUrl = null;
 
@@ -934,9 +948,7 @@
                 cloneInp.parentNode.replaceChild(span, cloneInp);
             });
 
-            const actionIcons = clone.querySelector('#cardActionIcons'); if (actionIcons) actionIcons.remove();
-            const urlBar = clone.querySelector('#urlEditorBar'); if (urlBar) urlBar.remove();
-            const quickExtractBtn = clone.querySelector('#btnQuickExtractLink'); if (quickExtractBtn) quickExtractBtn.remove();
+            clone.querySelectorAll('#cardActionIcons, #urlEditorBar, #btnQuickExtractLink, .no-capture').forEach(el => el.remove());
             const prop = getCurrentProperty();
             if (!prop.agencyPhone) { const sep1 = clone.querySelector('#sepAgency1'); if (sep1) sep1.style.display = 'none'; }
             if (!prop.agencyEmail) { const sep2 = clone.querySelector('#sepAgency2'); if (sep2) sep2.style.display = 'none'; }
@@ -954,37 +966,43 @@
 
         function closeShareModal() { document.getElementById('shareModal').classList.add('hidden'); }
 
-        async function shareCapturedImage() {
+        function shareCapturedImage() {
             if (!lastCapturedDataUrl) return;
-            const prop = getCurrentProperty(); const fileName = 'okpiso-' + Date.now() + '.png'; const base64Data = lastCapturedDataUrl.split(',')[1];
-            
-            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem && window.Capacitor.Plugins.Share) {
-                try {
-                    const savedFile = await window.Capacitor.Plugins.Filesystem.writeFile({ path: fileName, data: base64Data, directory: 'CACHE' });
-                    await window.Capacitor.Plugins.Share.share({ title: prop.title || 'Ficha OkPiso', url: savedFile.uri });
-                    return;
-                } catch (e) { showToast('Error al abrir compartir: ' + (e.message || '')); return; }
+            const fileName = 'okpiso-' + Date.now() + '.png';
+            const base64Data = lastCapturedDataUrl.split(',')[1];
+
+            // Puente nativo Android directo (sin cierres ni bloqueos)
+            if (window.OkPisoBridge && typeof window.OkPisoBridge.shareImage === 'function') {
+                window.OkPisoBridge.shareImage(base64Data, fileName);
+                return;
             }
 
             if (lastCapturedBlob && navigator.canShare) {
                 const file = new File([lastCapturedBlob], fileName, { type: 'image/png' });
-                if (navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: prop.title || 'Ficha OkPiso' }); return; } catch (e) {} }
+                if (navigator.canShare({ files: [file] })) {
+                    navigator.share({ files: [file], title: 'Ficha OkPiso' }).catch(() => {});
+                    return;
+                }
             }
             downloadCapturedImage();
         }
 
-        async function downloadCapturedImage() {
+        function downloadCapturedImage() {
             if (!lastCapturedDataUrl) return;
-            const fileName = 'okpiso-' + Date.now() + '.png'; const base64Data = lastCapturedDataUrl.split(',')[1];
+            const fileName = 'okpiso-' + Date.now() + '.png';
+            const base64Data = lastCapturedDataUrl.split(',')[1];
 
-            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
-                try {
-                    const savedFile = await window.Capacitor.Plugins.Filesystem.writeFile({ path: fileName, data: base64Data, directory: 'DOCUMENTS' });
-                    showToast('Guardada en Documentos/' + fileName);
-                    return;
-                } catch (e) { showToast('No se pudo guardar: ' + (e.message || '')); return; }
+            // Puente nativo Android MediaStore -> directo a Galería (álbum OkPiso)
+            if (window.OkPisoBridge && typeof window.OkPisoBridge.saveToGallery === 'function') {
+                window.OkPisoBridge.saveToGallery(base64Data, fileName);
+                return;
             }
-            const link = document.createElement('a'); link.download = fileName; link.href = lastCapturedDataUrl; link.click(); showToast('Imagen descargada');
+
+            const link = document.createElement('a');
+            link.download = fileName;
+            link.href = lastCapturedDataUrl;
+            link.click();
+            showToast('Imagen descargada');
         }
 
         function showToast(msg) {
