@@ -220,7 +220,7 @@
             </div>
         </div>
 
-        <!-- TABLA 1: DESGLOSE (Cajas anchas y letra ligeramente más compacta en móvil para que no se corte ningún número) -->
+        <!-- TABLA 1: DESGLOSE -->
         <div class="divide-y divide-[#eeeeee] border-t border-b-[1.5px] border-t-[#eeeeee] border-b-[#111111] mt-3 text-[12.5px] sm:text-[15px]">
             <div class="py-2.5 flex items-center justify-between gap-2">
                 <span class="text-[#111111] font-normal">Precio del piso</span>
@@ -274,7 +274,7 @@
             </div>
         </div>
 
-        <!-- TABLA 2: COMPARATIVA ITP 5% vs ITP 10% -->
+        <!-- TABLA 2: COMPARATIVA ITP -->
         <div class="mt-4 text-[11px] sm:text-[15px]">
             <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center pb-2 font-bold gap-1">
                 <div></div>
@@ -306,28 +306,33 @@
                 <div id="valTotal10" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">~0 €</div>
             </div>
 
+            <!-- FILA FALTA SOBRE (CAJA RECREADA PARA DESTACAR SIN NEGRITA) -->
             <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
                 <div class="flex items-center flex-wrap text-[#111111] leading-tight">
                     <span>Falta sobre</span>
-                    <div class="flex items-center">
+                    <div class="flex items-center ml-1 bg-[#fff8e1] border border-[#ffe082] rounded px-1 py-0.5 shadow-sm">
                         <input type="text" id="inpAvailableCash" inputmode="numeric"
                             onfocus="unformatInput(this)" onblur="formatAllInputs()" oninput="handleAvailableCashInput(this)"
-                            class="editable-field text-right font-normal w-16 sm:w-20 text-[#111111]">
-                        <span>€</span>
+                            class="bg-transparent text-right font-normal w-12 sm:w-16 text-[#111111] outline-none" placeholder="0">
+                        <span class="ml-0.5 font-normal text-[#666666]">€</span>
                     </div>
                 </div>
                 <div id="valMissing5" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">~0 €</div>
                 <div id="valMissing10" class="text-right font-bold text-[#111111] whitespace-nowrap tabular-nums">~0 €</div>
             </div>
 
+            <!-- CUOTAS CON CANDADO -->
             <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
                 <div class="flex items-center flex-wrap text-[#111111] text-[10.5px] sm:text-[14px] leading-tight">
+                    <button onclick="toggleQuotaLock(1)" title="Bloquear esta cuota" class="mr-0.5 p-0.5 rounded text-gray-500 hover:bg-gray-100 transition-colors" style="font-size:12px;">
+                        <span id="iconLock1">🔓</span>
+                    </button>
                     <span>Cuota</span>
                     <input type="text" id="inpYears1" inputmode="numeric"
                         oninput="handleYearsInput(1, this)"
-                        class="editable-field text-center font-normal w-6 sm:w-8 mx-0.5 text-[#111111]">
+                        class="editable-field text-center font-normal w-6 sm:w-8 mx-0.5 text-[#111111] transition-opacity">
                     <span id="lblMonths1" class="hidden text-[10px] sm:text-[12px] mr-0.5">y<span id="valMonths1">0</span>m</span>
-                    <span>años (3%)</span>
+                    <span>(3%)</span>
                 </div>
                 <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums">
                     <span>~</span>
@@ -347,12 +352,15 @@
 
             <div class="grid grid-cols-[1fr_82px_82px] sm:grid-cols-[1fr_110px_110px] items-center py-2 gap-1">
                 <div class="flex items-center flex-wrap text-[#111111] text-[10.5px] sm:text-[14px] leading-tight">
+                    <button onclick="toggleQuotaLock(2)" title="Bloquear esta cuota" class="mr-0.5 p-0.5 rounded text-gray-500 hover:bg-gray-100 transition-colors" style="font-size:12px;">
+                        <span id="iconLock2">🔓</span>
+                    </button>
                     <span>Cuota</span>
                     <input type="text" id="inpYears2" inputmode="numeric"
                         oninput="handleYearsInput(2, this)"
-                        class="editable-field text-center font-normal w-6 sm:w-8 mx-0.5 text-[#111111]">
+                        class="editable-field text-center font-normal w-6 sm:w-8 mx-0.5 text-[#111111] transition-opacity">
                     <span id="lblMonths2" class="hidden text-[10px] sm:text-[12px] mr-0.5">y<span id="valMonths2">0</span>m</span>
-                    <span>años (3%)</span>
+                    <span>(3%)</span>
                 </div>
                 <div class="flex items-center justify-end font-bold text-[#111111] whitespace-nowrap text-[10.5px] sm:text-[14px] tabular-nums">
                     <span>~</span>
@@ -371,7 +379,6 @@
             </div>
         </div>
 
-        <!-- Pie limpio -->
         <div class="border-t border-[#eeeeee] mt-5 pt-3 flex items-center justify-between text-[12px] sm:text-[13px]">
             <span id="txtUpdatedDate" class="text-[#777777]">Actualizado el 20 nov 2026</span>
         </div>
@@ -439,41 +446,12 @@
     <script id="embedded-data" type="application/json">
     {
         "defaultAvailableCash": 0,
-        "properties": [
-            {
-                "id": "piso-inicial-1",
-                "title": "",
-                "subtitle": "",
-                "rooms": "",
-                "floor": "",
-                "elevator": "",
-                "sqm": "",
-                "extraNote": "",
-                "price": 0,
-                "agencyLabel": "incluida",
-                "agencyFee": 0,
-                "brokerLabel": "sin obligación",
-                "brokerFee": 0,
-                "renovation": 0,
-                "otherExpenses": 3200,
-                "availableCash": 0,
-                "years1": 20,
-                "months1": 0,
-                "years2": 22,
-                "months2": 0,
-                "agencyName": "",
-                "agencyPhone": "",
-                "agencyEmail": "",
-                "listingUrl": "",
-                "favorite": false,
-                "updatedAt": ""
-            }
-        ]
+        "properties": []
     }
     </script>
 
     <script>
-        const STORAGE_KEY = 'okpiso_fichas_v1';
+        const STORAGE_KEY = 'okpiso_fichas_v2';
         let appState = {
             defaultAvailableCash: 0,
             properties: [],
@@ -488,17 +466,12 @@
                 if (savedRaw) loaded = JSON.parse(savedRaw);
             } catch (e) {}
 
-            if (!loaded) {
-                try {
-                    const embeddedEl = document.getElementById('embedded-data');
-                    if (embeddedEl && embeddedEl.textContent) loaded = JSON.parse(embeddedEl.textContent);
-                } catch (e) {}
+            if (!loaded || !loaded.properties || loaded.properties.length === 0) {
+                loaded = { defaultAvailableCash: 0, properties: [createBlankProperty(true)] };
             }
 
-            if (!loaded || typeof loaded !== 'object') loaded = { defaultAvailableCash: 0, properties: [] };
-
             appState.defaultAvailableCash = loaded.defaultAvailableCash || 0;
-            appState.properties = (loaded.properties && loaded.properties.length) ? loaded.properties : [createBlankProperty(false)];
+            appState.properties = loaded.properties;
             appState.currentIndex = 0;
             renderCurrentCard();
         }
@@ -506,30 +479,13 @@
         function createBlankProperty(isFirst = false) {
             return {
                 id: 'piso-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
-                title: '',
-                subtitle: '',
-                rooms: '',
-                floor: '',
-                elevator: '',
-                sqm: '',
-                extraNote: '',
-                price: 0,
-                agencyLabel: 'incluida',
-                agencyFee: 0,
-                brokerLabel: 'sin obligación',
-                brokerFee: 0,
-                renovation: 0,
-                otherExpenses: 3200,
+                title: '', subtitle: '', rooms: '', floor: '', elevator: '', sqm: '', extraNote: '',
+                price: 0, agencyLabel: 'incluida', agencyFee: 0, brokerLabel: 'sin obligación', brokerFee: 0,
+                renovation: 0, otherExpenses: 3200,
                 availableCash: isFirst ? 0 : (appState.defaultAvailableCash || 0),
-                years1: 20,
-                months1: 0,
-                years2: 22,
-                months2: 0,
-                agencyName: '',
-                agencyPhone: '',
-                agencyEmail: '',
-                listingUrl: '',
-                favorite: false,
+                years1: 20, months1: 0, years2: 22, months2: 0,
+                q1Locked: false, q1Target: 0, q2Locked: false, q2Target: 0,
+                agencyName: '', agencyPhone: '', agencyEmail: '', listingUrl: '', favorite: false,
                 updatedAt: formatSpanishDate(new Date())
             };
         }
@@ -598,6 +554,23 @@
             return { years: Math.floor(clampedMonths / 12), months: clampedMonths % 12 };
         }
 
+        function toggleQuotaLock(row) {
+            const prop = getCurrentProperty();
+            if (!prop) return;
+            const lockKey = 'q' + row + 'Locked';
+            prop[lockKey] = !prop[lockKey];
+
+            if (prop[lockKey]) {
+                const el = document.getElementById('inpQuota' + row + '_5');
+                prop['q' + row + 'Target'] = parseNumberES(el.value) || 0;
+                showToast('Cuota ' + row + ' bloqueada. Los años se ajustarán solos.');
+            } else {
+                showToast('Cuota ' + row + ' desbloqueada.');
+            }
+            saveState(true);
+            renderCurrentCard();
+        }
+
         function recalculateAll(skipInputId = null) {
             const prop = getCurrentProperty();
             if (!prop) return;
@@ -619,6 +592,17 @@
             const missing5 = Math.max(0, total5 - availableCash);
             const missing10 = Math.max(0, total10 - availableCash);
 
+            // Si el candado 1 está puesto, ajusta los años 1 automáticamente
+            if (prop.q1Locked && prop.q1Target > 0) {
+                const { years, months } = calculateMonthsFromQuota(missing5, 3, prop.q1Target);
+                prop.years1 = years; prop.months1 = months;
+            }
+            // Si el candado 2 está puesto, ajusta los años 2 automáticamente
+            if (prop.q2Locked && prop.q2Target > 0) {
+                const { years, months } = calculateMonthsFromQuota(missing5, 3, prop.q2Target);
+                prop.years2 = years; prop.months2 = months;
+            }
+
             const totalMonths1 = ((Number(prop.years1) || 0) * 12) + (Number(prop.months1) || 0);
             const totalMonths2 = ((Number(prop.years2) || 0) * 12) + (Number(prop.months2) || 0);
 
@@ -638,21 +622,13 @@
 
             if (skipInputId !== 'inpYears1') document.getElementById('inpYears1').value = prop.years1;
             const lblM1 = document.getElementById('lblMonths1');
-            if ((prop.months1 || 0) > 0) {
-                lblM1.classList.remove('hidden');
-                document.getElementById('valMonths1').textContent = prop.months1;
-            } else {
-                lblM1.classList.add('hidden');
-            }
+            if ((prop.months1 || 0) > 0) { lblM1.classList.remove('hidden'); document.getElementById('valMonths1').textContent = prop.months1; } 
+            else lblM1.classList.add('hidden');
 
             if (skipInputId !== 'inpYears2') document.getElementById('inpYears2').value = prop.years2;
             const lblM2 = document.getElementById('lblMonths2');
-            if ((prop.months2 || 0) > 0) {
-                lblM2.classList.remove('hidden');
-                document.getElementById('valMonths2').textContent = prop.months2;
-            } else {
-                lblM2.classList.add('hidden');
-            }
+            if ((prop.months2 || 0) > 0) { lblM2.classList.remove('hidden'); document.getElementById('valMonths2').textContent = prop.months2; } 
+            else lblM2.classList.add('hidden');
 
             if (skipInputId !== 'inpQuota1_5') document.getElementById('inpQuota1_5').value = formatNumberES(q1_5);
             if (skipInputId !== 'inpQuota1_10') document.getElementById('inpQuota1_10').value = formatNumberES(q1_10);
@@ -670,26 +646,24 @@
             document.getElementById('btnNext').disabled = appState.currentIndex >= list.length - 1;
 
             const iconFavFilter = document.getElementById('iconFavFilter');
-            if (appState.onlyFavorites) {
-                iconFavFilter.classList.add('text-rose-500', 'fill-rose-500');
-            } else {
-                iconFavFilter.classList.remove('text-rose-500', 'fill-rose-500');
-            }
+            if (appState.onlyFavorites) iconFavFilter.classList.add('text-rose-500', 'fill-rose-500');
+            else iconFavFilter.classList.remove('text-rose-500', 'fill-rose-500');
 
             const iconHeart = document.getElementById('iconHeart');
-            if (prop.favorite) {
-                iconHeart.classList.add('text-rose-500', 'fill-rose-500');
-                iconHeart.classList.remove('text-gray-300');
-            } else {
-                iconHeart.classList.remove('text-rose-500', 'fill-rose-500');
-                iconHeart.classList.add('text-gray-300');
-            }
+            if (prop.favorite) { iconHeart.classList.add('text-rose-500', 'fill-rose-500'); iconHeart.classList.remove('text-gray-300'); } 
+            else { iconHeart.classList.remove('text-rose-500', 'fill-rose-500'); iconHeart.classList.add('text-gray-300'); }
+
+            document.getElementById('iconLock1').textContent = prop.q1Locked ? '🔒' : '🔓';
+            document.getElementById('iconLock2').textContent = prop.q2Locked ? '🔒' : '🔓';
+            document.getElementById('inpYears1').disabled = prop.q1Locked;
+            document.getElementById('inpYears2').disabled = prop.q2Locked;
+            document.getElementById('inpYears1').style.opacity = prop.q1Locked ? '0.5' : '1';
+            document.getElementById('inpYears2').style.opacity = prop.q2Locked ? '0.5' : '1';
 
             document.getElementById('inpAgencyName').value = prop.agencyName || '';
             document.getElementById('inpAgencyPhone').value = prop.agencyPhone || '';
             document.getElementById('inpAgencyEmail').value = prop.agencyEmail || '';
             updatePhoneLink(prop.agencyPhone);
-
             document.getElementById('inpHiddenUrl').value = prop.listingUrl || '';
             updateUrlIndicator(prop.listingUrl);
             toggleUrlBar(false);
@@ -724,13 +698,8 @@
             if (list.length <= 1) return;
             list.forEach((_, idx) => {
                 const dot = document.createElement('button');
-                dot.className = idx === appState.currentIndex
-                    ? 'w-4 h-1.5 rounded-full bg-rose-500 transition-all'
-                    : 'w-1.5 h-1.5 rounded-full bg-gray-300 hover:bg-gray-400 transition-all';
-                dot.onclick = () => {
-                    appState.currentIndex = idx;
-                    renderCurrentCard();
-                };
+                dot.className = idx === appState.currentIndex ? 'w-4 h-1.5 rounded-full bg-rose-500 transition-all' : 'w-1.5 h-1.5 rounded-full bg-gray-300 hover:bg-gray-400 transition-all';
+                dot.onclick = () => { appState.currentIndex = idx; renderCurrentCard(); };
                 container.appendChild(dot);
             });
         }
@@ -747,39 +716,22 @@
         function updatePhoneLink(phone) {
             const link = document.getElementById('linkCallPhone');
             const clean = (phone || '').replace(/[^\d+]/g, '');
-            if (clean.length >= 6) {
-                link.href = `tel:${clean}`;
-                link.classList.remove('hidden');
-            } else {
-                link.classList.add('hidden');
-            }
+            if (clean.length >= 6) { link.href = `tel:${clean}`; link.classList.remove('hidden'); } 
+            else link.classList.add('hidden');
         }
 
         function updateUrlIndicator(url) {
             const dot = document.getElementById('dotHasLink');
             const visitBtn = document.getElementById('btnVisitUrl');
-            if (url && url.trim().length > 4) {
-                dot.classList.remove('hidden');
-                visitBtn.href = url.startsWith('http') ? url.trim() : 'https://' + url.trim();
-            } else {
-                dot.classList.add('hidden');
-                visitBtn.href = '#';
-            }
+            if (url && url.trim().length > 4) { dot.classList.remove('hidden'); visitBtn.href = url.startsWith('http') ? url.trim() : 'https://' + url.trim(); } 
+            else { dot.classList.add('hidden'); visitBtn.href = '#'; }
         }
 
-        function handleListingLinkClick() {
-            const bar = document.getElementById('urlEditorBar');
-            toggleUrlBar(bar.classList.contains('hidden'));
-        }
-
+        function handleListingLinkClick() { toggleUrlBar(document.getElementById('urlEditorBar').classList.contains('hidden')); }
         function toggleUrlBar(show) {
             const bar = document.getElementById('urlEditorBar');
-            if (show) {
-                bar.classList.remove('hidden');
-                document.getElementById('inpHiddenUrl').focus();
-            } else {
-                bar.classList.add('hidden');
-            }
+            if (show) { bar.classList.remove('hidden'); document.getElementById('inpHiddenUrl').focus(); } 
+            else bar.classList.add('hidden');
         }
 
         async function autoFillFromUrl() {
@@ -787,30 +739,21 @@
             const url = (prop.listingUrl || '').trim();
             const pastedText = (document.getElementById('inpPasteAdText')?.value || '').trim();
 
-            if (!url && !pastedText) {
-                showToast('Pega un enlace web o el texto copiado del anuncio');
-                return;
-            }
+            if (!url && !pastedText) { showToast('Pega un enlace web o el texto copiado del anuncio'); return; }
             const spinner = document.getElementById('autoFillSpinner');
             const btnText = document.getElementById('autoFillText');
-            spinner.classList.remove('hidden');
-            btnText.textContent = 'Extrayendo...';
+            spinner.classList.remove('hidden'); btnText.textContent = 'Extrayendo...';
 
             const parseRealEstateText = (rawText, rawUrl) => {
                 let count = 0;
                 const fullText = `${rawText || ''}\n${rawUrl ? decodeURIComponent(rawUrl).replace(/https?:\/\/(www\.)?/i, '').replace(/[-_/]+/g, ' ') : ''}`;
                 const lines = (rawText || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean);
 
-                const titleLine = lines.find(l =>
-                    /^(piso|ático|atico|dúplex|duplex|casa|chalet|estudio|apartamento|planta baja|loft)/i.test(l) && l.length >= 8 && l.length <= 120
-                );
+                const titleLine = lines.find(l => /^(piso|ático|atico|dúplex|duplex|casa|chalet|estudio|apartamento|planta baja|loft)/i.test(l) && l.length >= 8 && l.length <= 120);
                 if (titleLine) { prop.title = titleLine; count++; }
 
                 const priceMatches = [...fullText.matchAll(/(\d{2,3}(?:[\.\s]\d{3})+|\d{5,6})\s*(?:€|eur|euros)/gi)];
-                for (const m of priceMatches) {
-                    const val = parseNumberES(m[1]);
-                    if (val >= 20000 && val <= 3000000) { prop.price = val; count++; break; }
-                }
+                for (const m of priceMatches) { const val = parseNumberES(m[1]); if (val >= 20000 && val <= 3000000) { prop.price = val; count++; break; } }
 
                 const wordToNum = { 'una': '1', 'un': '1', 'dos': '2', 'tres': '3', 'cuatro': '4', 'cinco': '5', 'seis': '6', 'siete': '7' };
                 const habDigit = fullText.match(/\b(\d{1,2})\s*(?:hab\.?|habitaci[oó]n(?:es)?|dormitorio(?:s)?)\b/i);
@@ -823,8 +766,7 @@
 
                 const floorMatch = fullText.match(/\b(?:planta\s*(\d+)[ºª]?|(\d+)[ºª]\s*(?:planta|piso|exterior|interior)?|bajo|entresuelo|principal|sobreático|ático|atico)\b/i);
                 if (floorMatch) {
-                    if (floorMatch[1]) prop.floor = `${floorMatch[1]}º`;
-                    else if (floorMatch[2]) prop.floor = `${floorMatch[2]}º`;
+                    if (floorMatch[1]) prop.floor = `${floorMatch[1]}º`; else if (floorMatch[2]) prop.floor = `${floorMatch[2]}º`;
                     else prop.floor = floorMatch[0].charAt(0).toUpperCase() + floorMatch[0].slice(1).toLowerCase();
                     count++;
                 }
@@ -843,32 +785,20 @@
 
                 const phoneMatch = fullText.match(/\b([6789]\d{2}[\s.-]?\d{2,3}[\s.-]?\d{2,3})\b/);
                 if (phoneMatch) prop.agencyPhone = phoneMatch[1].replace(/\s+/g, ' ').trim();
-
                 return count;
             };
 
             let filledCount = parseRealEstateText(pastedText, url);
-
-            saveState(true);
-            renderCurrentCard();
-
-            spinner.classList.add('hidden');
-            btnText.textContent = 'Extraer y rellenar ficha';
+            saveState(true); renderCurrentCard();
+            spinner.classList.add('hidden'); btnText.textContent = 'Extraer y rellenar ficha';
 
             if (filledCount > 0) {
                 if (document.getElementById('inpPasteAdText')) document.getElementById('inpPasteAdText').value = '';
-                toggleUrlBar(false);
-                showToast(`¡Hecho! ${filledCount} datos rellenados`);
-            } else {
-                toggleUrlBar(true);
-                showToast('Pega el texto copiado del anuncio arriba');
-            }
+                toggleUrlBar(false); showToast(`¡Hecho! ${filledCount} datos rellenados`);
+            } else { toggleUrlBar(true); showToast('Pega el texto copiado del anuncio arriba'); }
         }
 
-        function unformatInput(el) {
-            const val = parseNumberES(el.value);
-            el.value = val === 0 ? '' : val.toString();
-        }
+        function unformatInput(el) { const val = parseNumberES(el.value); el.value = val === 0 ? '' : val.toString(); }
 
         function formatAllInputs() {
             const prop = getCurrentProperty();
@@ -883,38 +813,36 @@
         }
 
         function handleNumericInput(field, el) {
-            const prop = getCurrentProperty();
-            if (!prop) return;
+            const prop = getCurrentProperty(); if (!prop) return;
             prop[field] = parseNumberES(el.value);
-            recalculateAll(el.id);
-            saveState(true);
+            recalculateAll(el.id); saveState(true);
         }
 
         function handleAvailableCashInput(el) {
-            const prop = getCurrentProperty();
-            if (!prop) return;
+            const prop = getCurrentProperty(); if (!prop) return;
             const val = parseNumberES(el.value);
             prop.availableCash = val;
             if (appState.properties.indexOf(prop) === 0) appState.defaultAvailableCash = val;
-            recalculateAll(el.id);
-            saveState(true);
+            recalculateAll(el.id); saveState(true);
         }
 
         function handleYearsInput(row, el) {
-            const prop = getCurrentProperty();
-            if (!prop) return;
+            const prop = getCurrentProperty(); if (!prop) return;
+            if (prop['q' + row + 'Locked']) {
+                prop['q' + row + 'Locked'] = false;
+                showToast('Candado abierto automáticamente');
+            }
             const yrs = Math.max(1, Math.min(50, Math.round(parseNumberES(el.value))));
-            if (row === 1) { prop.years1 = yrs; prop.months1 = 0; }
-            else { prop.years2 = yrs; prop.months2 = 0; }
-            recalculateAll(el.id);
-            saveState(true);
+            if (row === 1) { prop.years1 = yrs; prop.months1 = 0; } else { prop.years2 = yrs; prop.months2 = 0; }
+            recalculateAll(el.id); saveState(true); renderCurrentCard();
         }
 
         function handleQuotaInput(row, itpType, el) {
-            const prop = getCurrentProperty();
-            if (!prop) return;
+            const prop = getCurrentProperty(); if (!prop) return;
             const targetQuota = parseNumberES(el.value);
             if (targetQuota <= 0) return;
+
+            if (prop['q' + row + 'Locked'] && itpType === 5) prop['q' + row + 'Target'] = targetQuota;
 
             const price = Number(prop.price) || 0;
             const pricePlusRenovation = price + (Number(prop.agencyFee) || 0) + (Number(prop.brokerFee) || 0) + (Number(prop.renovation) || 0);
@@ -923,290 +851,153 @@
             const missing = Math.max(0, total - (Number(prop.availableCash) || 0));
 
             const { years, months } = calculateMonthsFromQuota(missing, 3, targetQuota);
-            if (row === 1) { prop.years1 = years; prop.months1 = months; }
-            else { prop.years2 = years; prop.months2 = months; }
-            recalculateAll(el.id);
-            saveState(true);
+            if (row === 1) { prop.years1 = years; prop.months1 = months; } else { prop.years2 = years; prop.months2 = months; }
+            recalculateAll(el.id); saveState(true);
         }
 
         function navigateCard(delta) {
             const list = getVisibleProperties();
             const nextIdx = appState.currentIndex + delta;
             if (nextIdx >= 0 && nextIdx < list.length) {
-                const card = document.getElementById('propertyCard');
-                card.style.opacity = '0.5';
-                setTimeout(() => {
-                    appState.currentIndex = nextIdx;
-                    renderCurrentCard();
-                    card.style.opacity = '1';
-                }, 110);
+                const card = document.getElementById('propertyCard'); card.style.opacity = '0.5';
+                setTimeout(() => { appState.currentIndex = nextIdx; renderCurrentCard(); card.style.opacity = '1'; }, 110);
             }
         }
 
         function addNewProperty() {
-            appState.onlyFavorites = false;
-            const newProp = createBlankProperty(false);
-            appState.properties.push(newProp);
+            appState.onlyFavorites = false; appState.properties.push(createBlankProperty(false));
             appState.currentIndex = appState.properties.length - 1;
-            saveState(false);
-            renderCurrentCard();
-            showToast('Nueva ficha en blanco creada');
+            saveState(false); renderCurrentCard(); showToast('Nueva ficha en blanco creada');
         }
 
         function resetToBlankSheet() {
-            appState.defaultAvailableCash = 0;
-            appState.onlyFavorites = false;
-            appState.properties = [createBlankProperty(true)];
-            appState.currentIndex = 0;
-            saveState(false);
-            renderCurrentCard();
-            showToast('Hoja reiniciada en blanco');
+            appState.defaultAvailableCash = 0; appState.onlyFavorites = false;
+            appState.properties = [createBlankProperty(true)]; appState.currentIndex = 0;
+            saveState(false); renderCurrentCard(); showToast('Hoja reiniciada en blanco');
         }
 
         function toggleFavorite() {
-            const prop = getCurrentProperty();
-            if (!prop) return;
-            prop.favorite = !prop.favorite;
-            saveState(false);
-            renderCurrentCard();
+            const prop = getCurrentProperty(); if (!prop) return;
+            prop.favorite = !prop.favorite; saveState(false); renderCurrentCard();
             showToast(prop.favorite ? 'Añadido a favoritos' : 'Quitado de favoritos');
         }
 
         function toggleFavFilter() {
             const favs = appState.properties.filter(p => p.favorite);
-            if (!appState.onlyFavorites && favs.length === 0) {
-                showToast('Aún no tienes pisos favoritos');
-                return;
-            }
-            appState.onlyFavorites = !appState.onlyFavorites;
-            appState.currentIndex = 0;
-            renderCurrentCard();
+            if (!appState.onlyFavorites && favs.length === 0) { showToast('Aún no tienes pisos favoritos'); return; }
+            appState.onlyFavorites = !appState.onlyFavorites; appState.currentIndex = 0; renderCurrentCard();
         }
 
         function toggleIndexModal() {
             const modal = document.getElementById('indexModal');
             if (modal.classList.contains('hidden')) {
-                const listEl = document.getElementById('indexList');
-                listEl.innerHTML = '';
+                const listEl = document.getElementById('indexList'); listEl.innerHTML = '';
                 appState.properties.forEach((p, idx) => {
                     const item = document.createElement('button');
                     item.className = 'w-full py-2.5 px-2 flex items-center justify-between text-left hover:bg-gray-50 rounded-lg transition';
-                    item.innerHTML = `
-                        <div class="truncate pr-2">
-                            <div class="font-semibold text-sm text-gray-900 truncate">${p.title || 'Piso sin título #' + (idx + 1)}</div>
-                            <div class="text-xs text-gray-500">${formatNumberES(p.price || 0)} € ${p.rooms ? '• ' + p.rooms : ''}</div>
-                        </div>
-                        <span class="text-sm">${p.favorite ? '❤️' : '🤍'}</span>
-                    `;
-                    item.onclick = () => {
-                        appState.onlyFavorites = false;
-                        appState.currentIndex = idx;
-                        toggleIndexModal();
-                        renderCurrentCard();
-                    };
+                    item.innerHTML = `<div class="truncate pr-2"><div class="font-semibold text-sm text-gray-900 truncate">${p.title || 'Piso sin título #' + (idx + 1)}</div><div class="text-xs text-gray-500">${formatNumberES(p.price || 0)} € ${p.rooms ? '• ' + p.rooms : ''}</div></div><span class="text-sm">${p.favorite ? '❤️' : '🤍'}</span>`;
+                    item.onclick = () => { appState.onlyFavorites = false; appState.currentIndex = idx; toggleIndexModal(); renderCurrentCard(); };
                     listEl.appendChild(item);
                 });
                 modal.classList.remove('hidden');
-            } else {
-                modal.classList.add('hidden');
-            }
+            } else modal.classList.add('hidden');
         }
 
-        function confirmDeleteCurrent() {
-            document.getElementById('deleteModal').classList.remove('hidden');
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
-        }
-
+        function confirmDeleteCurrent() { document.getElementById('deleteModal').classList.remove('hidden'); }
+        function closeDeleteModal() { document.getElementById('deleteModal').classList.add('hidden'); }
         function executeDeleteCurrent() {
-            closeDeleteModal();
-            const current = getCurrentProperty();
-            const realIdx = appState.properties.indexOf(current);
+            closeDeleteModal(); const current = getCurrentProperty(); const realIdx = appState.properties.indexOf(current);
             if (realIdx > -1) appState.properties.splice(realIdx, 1);
             if (appState.properties.length === 0) appState.properties.push(createBlankProperty(true));
             appState.currentIndex = Math.max(0, Math.min(appState.currentIndex, appState.properties.length - 1));
-            saveState(false);
-            renderCurrentCard();
-            showToast('Ficha eliminada');
+            saveState(false); renderCurrentCard(); showToast('Ficha eliminada');
         }
 
-        // CAPTURA Y COMPARTIR SEGURO (SIN CRASHES EN ANDROID)
+        // CAPTURA Y COMPARTIR NATIVO
         let lastCapturedBlob = null;
         let lastCapturedDataUrl = null;
 
         async function captureAndShareCard() {
             const original = document.getElementById('propertyCard');
             const wrapper = document.createElement('div');
-            wrapper.style.position = 'fixed';
-            wrapper.style.left = '-9999px';
-            wrapper.style.top = '0';
-            wrapper.style.width = '480px';
-            wrapper.style.background = '#ffffff';
-            wrapper.style.zIndex = '-1';
+            wrapper.style.position = 'fixed'; wrapper.style.left = '-9999px'; wrapper.style.top = '0'; wrapper.style.width = '480px'; wrapper.style.background = '#ffffff'; wrapper.style.zIndex = '-1';
 
             const clone = original.cloneNode(true);
-            clone.style.width = '480px';
-            clone.style.maxWidth = '480px';
-            clone.style.boxShadow = 'none';
-            clone.style.borderRadius = '0';
-            clone.style.padding = '28px 32px';
+            clone.style.width = '480px'; clone.style.maxWidth = '480px'; clone.style.boxShadow = 'none'; clone.style.borderRadius = '0'; clone.style.padding = '28px 32px';
 
             const origInputs = original.querySelectorAll('input');
             origInputs.forEach(origInp => {
-                if (!origInp.id) return;
-                const cloneInp = clone.querySelector('#' + origInp.id);
-                if (!cloneInp) return;
-
+                if (!origInp.id) return; const cloneInp = clone.querySelector('#' + origInp.id); if (!cloneInp) return;
                 const span = document.createElement('span');
-                span.textContent = origInp.value || '';
-                span.className = cloneInp.className;
-                span.style.border = 'none';
-                span.style.background = 'transparent';
-                span.style.display = 'inline-block';
-                span.style.lineHeight = '1.45';
-                span.style.paddingBottom = '2px';
-                span.style.overflow = 'visible';
-                if (!origInp.value && origInp.placeholder) {
-                    span.textContent = origInp.placeholder;
-                    span.style.color = '#9ca3af';
-                }
+                span.textContent = origInp.value || ''; span.className = cloneInp.className; span.style.border = 'none'; span.style.background = 'transparent'; span.style.display = 'inline-block'; span.style.lineHeight = '1.45'; span.style.paddingBottom = '2px'; span.style.overflow = 'visible';
+                if (!origInp.value && origInp.placeholder) { span.textContent = origInp.placeholder; span.style.color = '#9ca3af'; }
                 cloneInp.parentNode.replaceChild(span, cloneInp);
             });
 
-            const actionIcons = clone.querySelector('#cardActionIcons');
-            if (actionIcons) actionIcons.remove();
-            const urlBar = clone.querySelector('#urlEditorBar');
-            if (urlBar) urlBar.remove();
-            const quickExtractBtn = clone.querySelector('#btnQuickExtractLink');
-            if (quickExtractBtn) quickExtractBtn.remove();
+            const actionIcons = clone.querySelector('#cardActionIcons'); if (actionIcons) actionIcons.remove();
+            const urlBar = clone.querySelector('#urlEditorBar'); if (urlBar) urlBar.remove();
+            const quickExtractBtn = clone.querySelector('#btnQuickExtractLink'); if (quickExtractBtn) quickExtractBtn.remove();
             const prop = getCurrentProperty();
-            if (!prop.agencyPhone) {
-                const sep1 = clone.querySelector('#sepAgency1');
-                if (sep1) sep1.style.display = 'none';
-            }
-            if (!prop.agencyEmail) {
-                const sep2 = clone.querySelector('#sepAgency2');
-                if (sep2) sep2.style.display = 'none';
-            }
+            if (!prop.agencyPhone) { const sep1 = clone.querySelector('#sepAgency1'); if (sep1) sep1.style.display = 'none'; }
+            if (!prop.agencyEmail) { const sep2 = clone.querySelector('#sepAgency2'); if (sep2) sep2.style.display = 'none'; }
 
-            wrapper.appendChild(clone);
-            document.body.appendChild(wrapper);
+            wrapper.appendChild(clone); document.body.appendChild(wrapper);
 
             try {
-                const canvas = await html2canvas(clone, {
-                    scale: 2,
-                    backgroundColor: '#ffffff',
-                    useCORS: true,
-                    logging: false
-                });
+                const canvas = await html2canvas(clone, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
                 lastCapturedDataUrl = canvas.toDataURL('image/png');
-                canvas.toBlob(blob => {
-                    lastCapturedBlob = blob;
-                }, 'image/png');
-
+                canvas.toBlob(blob => { lastCapturedBlob = blob; }, 'image/png');
                 document.getElementById('capturedPreviewImg').src = lastCapturedDataUrl;
                 document.getElementById('shareModal').classList.remove('hidden');
-            } catch (err) {
-                showToast('Error al generar la captura');
-            } finally {
-                document.body.removeChild(wrapper);
-            }
+            } catch (err) { showToast('Error al generar la captura'); } finally { document.body.removeChild(wrapper); }
         }
 
-        function closeShareModal() {
-            document.getElementById('shareModal').classList.add('hidden');
-        }
+        function closeShareModal() { document.getElementById('shareModal').classList.add('hidden'); }
 
         async function shareCapturedImage() {
             if (!lastCapturedDataUrl) return;
-            const prop = getCurrentProperty();
-            const fileName = 'okpiso-' + Date.now() + '.png';
-            const base64Data = lastCapturedDataUrl.split(',')[1];
-
+            const prop = getCurrentProperty(); const fileName = 'okpiso-' + Date.now() + '.png'; const base64Data = lastCapturedDataUrl.split(',')[1];
+            
             if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem && window.Capacitor.Plugins.Share) {
                 try {
-                    const savedFile = await window.Capacitor.Plugins.Filesystem.writeFile({
-                        path: fileName,
-                        data: base64Data,
-                        directory: 'CACHE'
-                    });
-                    await window.Capacitor.Plugins.Share.share({
-                        title: prop.title || 'Ficha OkPiso',
-                        url: savedFile.uri
-                    });
+                    const savedFile = await window.Capacitor.Plugins.Filesystem.writeFile({ path: fileName, data: base64Data, directory: 'CACHE' });
+                    await window.Capacitor.Plugins.Share.share({ title: prop.title || 'Ficha OkPiso', url: savedFile.uri });
                     return;
-                } catch (e) {
-                    showToast('Error al abrir compartir: ' + (e.message || ''));
-                    return;
-                }
+                } catch (e) { showToast('Error al abrir compartir: ' + (e.message || '')); return; }
             }
 
             if (lastCapturedBlob && navigator.canShare) {
                 const file = new File([lastCapturedBlob], fileName, { type: 'image/png' });
-                if (navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({ files: [file], title: prop.title || 'Ficha OkPiso' });
-                        return;
-                    } catch (e) {}
-                }
+                if (navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], title: prop.title || 'Ficha OkPiso' }); return; } catch (e) {} }
             }
             downloadCapturedImage();
         }
 
         async function downloadCapturedImage() {
             if (!lastCapturedDataUrl) return;
-            const fileName = 'okpiso-' + Date.now() + '.png';
-            const base64Data = lastCapturedDataUrl.split(',')[1];
+            const fileName = 'okpiso-' + Date.now() + '.png'; const base64Data = lastCapturedDataUrl.split(',')[1];
 
             if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
                 try {
-                    const savedFile = await window.Capacitor.Plugins.Filesystem.writeFile({
-                        path: fileName,
-                        data: base64Data,
-                        directory: 'DOCUMENTS'
-                    });
+                    const savedFile = await window.Capacitor.Plugins.Filesystem.writeFile({ path: fileName, data: base64Data, directory: 'DOCUMENTS' });
                     showToast('Guardada en Documentos/' + fileName);
                     return;
-                } catch (e) {
-                    showToast('No se pudo guardar: ' + (e.message || ''));
-                    return;
-                }
+                } catch (e) { showToast('No se pudo guardar: ' + (e.message || '')); return; }
             }
-
-            const link = document.createElement('a');
-            link.download = fileName;
-            link.href = lastCapturedDataUrl;
-            link.click();
-            showToast('Imagen descargada');
+            const link = document.createElement('a'); link.download = fileName; link.href = lastCapturedDataUrl; link.click(); showToast('Imagen descargada');
         }
 
         function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.classList.remove('opacity-0');
-            clearTimeout(window._toastTimer);
-            window._toastTimer = setTimeout(() => {
-                t.classList.add('opacity-0');
-            }, 3000);
+            const t = document.getElementById('toast'); t.textContent = msg; t.classList.remove('opacity-0');
+            clearTimeout(window._toastTimer); window._toastTimer = setTimeout(() => { t.classList.add('opacity-0'); }, 3000);
         }
 
-        let touchStartX = 0;
-        let touchStartY = 0;
-        const cardEl = document.getElementById('propertyCard');
-        cardEl.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
-        }, { passive: true });
-
+        let touchStartX = 0; let touchStartY = 0; const cardEl = document.getElementById('propertyCard');
+        cardEl.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; touchStartY = e.changedTouches[0].screenY; }, { passive: true });
         cardEl.addEventListener('touchend', e => {
             if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
-            const dx = e.changedTouches[0].screenX - touchStartX;
-            const dy = e.changedTouches[0].screenY - touchStartY;
-            if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-                navigateCard(dx < 0 ? 1 : -1);
-            }
+            const dx = e.changedTouches[0].screenX - touchStartX; const dy = e.changedTouches[0].screenY - touchStartY;
+            if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) navigateCard(dx < 0 ? 1 : -1);
         }, { passive: true });
 
         window.addEventListener('DOMContentLoaded', initApp);
