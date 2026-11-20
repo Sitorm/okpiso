@@ -29,24 +29,106 @@ jobs:
           mkdir -p www
           cp index.html www/index.html
 
-      - name: 5. Crear proyecto Android con Plugins y Permisos
+      - name: 5. Crear proyecto Android
         run: |
           npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/filesystem @capacitor/share
+          npm install @capacitor/core @capacitor/cli @capacitor/android
           npx cap init "OkPiso" "com.sitorm.okpiso" --web-dir www
           npx cap add android
-          npx cap sync android
           echo 'configurations.all { resolutionStrategy { force "org.jetbrains.kotlin:kotlin-stdlib:1.8.22", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22" } }' >> android/app/build.gradle
-          cat << 'EOF' > android/app/src/main/res/xml/file_paths.xml
-          <?xml version="1.0" encoding="utf-8"?>
-          <paths xmlns:android="http://schemas.android.com/apk/res/android">
-              <cache-path name="my_cache_images" path="." />
-              <external-path name="my_images" path="." />
-              <files-path name="my_files" path="." />
-          </paths>
+
+      - name: 6. Inyectar puente nativo Android (Galeria y WhatsApp sin cierres)
+        run: |
+          cat << 'EOF' > android/app/src/main/java/com/sitorm/okpiso/MainActivity.java
+          package com.sitorm.okpiso;
+
+          import android.content.ClipData;
+          import android.content.ContentResolver;
+          import android.content.ContentValues;
+          import android.content.Intent;
+          import android.net.Uri;
+          import android.os.Build;
+          import android.os.Bundle;
+          import android.os.Environment;
+          import android.provider.MediaStore;
+          import android.util.Base64;
+          import android.webkit.JavascriptInterface;
+          import android.widget.Toast;
+          import androidx.core.content.FileProvider;
+          import com.getcapacitor.BridgeActivity;
+          import java.io.File;
+          import java.io.FileOutputStream;
+          import java.io.OutputStream;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  if (this.bridge != null && this.bridge.getWebView() != null) {
+                      this.bridge.getWebView().addJavascriptInterface(new OkPisoBridge(), "OkPisoBridge");
+                  }
+              }
+
+              public class OkPisoBridge {
+                  @JavascriptInterface
+                  public void saveToGallery(String base64Data, String fileName) {
+                      try {
+                          byte[] bytes = Base64.decode(base64Data, Base64.DEFAULT);
+                          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                              ContentResolver resolver = getContentResolver();
+                              ContentValues values = new ContentValues();
+                              values.put(MediaStore.MediaColumns.DISPLAY_NAME, fileName);
+                              values.put(MediaStore.MediaColumns.MIME_TYPE, "image/png");
+                              values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/OkPiso");
+                              Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                              if (uri != null) {
+                                  try (OutputStream out = resolver.openOutputStream(uri)) {
+                                      if (out != null) out.write(bytes);
+                                  }
+                              }
+                          } else {
+                              File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "OkPiso");
+                              if (!dir.exists()) dir.mkdirs();
+                              File file = new File(dir, fileName);
+                              try (FileOutputStream fos = new FileOutputStream(file)) {
+                                  fos.write(bytes);
+                              }
+                              Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                              mediaScanIntent.setData(Uri.fromFile(file));
+                              sendBroadcast(mediaScanIntent);
+                          }
+                          runOnUiThread(() -> Toast.makeText(MainActivity.this, "Guardada en Galería (álbum OkPiso)", Toast.LENGTH_LONG).show());
+                      } catch (Exception e) {
+                          runOnUiThread(() -> Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                      }
+                  }
+
+                  @JavascriptInterface
+                  public void shareImage(String base64Data, String fileName) {
+                      try {
+                          byte[] bytes = Base64.decode(base64Data, Base64.DEFAULT);
+                          File cacheFile = new File(getCacheDir(), fileName);
+                          try (FileOutputStream fos = new FileOutputStream(cacheFile)) {
+                              fos.write(bytes);
+                          }
+                          Uri contentUri = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".fileprovider", cacheFile);
+                          Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                          sendIntent.setType("image/png");
+                          sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
+                          sendIntent.setClipData(ClipData.newRawUri("", contentUri));
+                          sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                          Intent chooser = Intent.createChooser(sendIntent, "Enviar ficha OkPiso");
+                          chooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                          startActivity(chooser);
+                      } catch (Exception e) {
+                          runOnUiThread(() -> Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                      }
+                  }
+              }
+          }
           EOF
 
-      - name: 6. Poner icono OkPiso sin conflictos
+      - name: 7. Poner icono OkPiso sin conflictos
         run: |
           if [ -f "okpiso-icon.png" ]; then
             for dir in android/app/src/main/res/mipmap-mdpi android/app/src/main/res/mipmap-hdpi android/app/src/main/res/mipmap-xhdpi android/app/src/main/res/mipmap-xxhdpi android/app/src/main/res/mipmap-xxxhdpi; do
@@ -58,13 +140,19 @@ jobs:
             done
           fi
 
-      - name: 7. Compilar APK limpia
+      - name: 8. Firma fija para actualizar encima en el futuro
+        run: |
+          mkdir -p ~/.android
+          rm -f ~/.android/debug.keystore
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+
+      - name: 9. Compilar APK limpia
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: 8. Guardar OkPiso.apk
+      - name: 10. Guardar OkPiso.apk
         uses: actions/upload-artifact@v4
         with:
           name: OkPiso-APK-Limpia
